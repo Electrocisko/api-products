@@ -8,11 +8,13 @@ const getAllProducts = async (req,res) =>{
        const data =  await pool.query(`SELECT * FROM ${tableName}`);
        res.status(200).json({
         statusOk: true,
-        message:"Pronto se van a mostrar productos",
-        response: data.rows
+        data: data.rows
     })
     } catch (error) {
-        console.log(error);
+        res.status(500).json({
+            statusOk: false,
+            message: error.message
+        })
     }
 }
 
