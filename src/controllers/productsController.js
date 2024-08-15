@@ -1,7 +1,7 @@
 import { pool } from "../database/postgres.js";
 
 
-const tableName = 'users';
+const tableName = 'products';
 
 const getAllProducts = async (req,res) =>{
     try {
