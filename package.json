@@ -1,0 +1,16 @@
+{
+  "name": "ecommerce",
+  "version": "1.0.0",
+  "description": "First version of an api ecommerce",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+        "start": "node src/app.js",
+    "dev": "nodemon --env-file .env src/app.js"
+  },
+  "author": "Francisco Juan Zuidwijk",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
