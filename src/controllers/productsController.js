@@ -31,8 +31,6 @@ const getNewProducts = async (req, res) => {
       message: error.message,
     });
   }
-};
-
 const getTopProducts = async (req, res) => {
   try {
     const queryString = `SELECT * FROM ${tableName} ORDER BY quantity_sold DESC   ;`;
