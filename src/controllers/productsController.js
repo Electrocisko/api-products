@@ -31,9 +31,11 @@ const getNewProducts = async (req, res) => {
       message: error.message,
     });
   }
+};
+
 const getTopProducts = async (req, res) => {
   try {
-    const queryString = `SELECT * FROM ${tableName} ORDER BY quantity_sold DESC   ;`;
+    const queryString = `SELECT * FROM ${tableName} ORDER BY quantity_sold DESC ;`;
     const data = await pool.query(queryString)
     res.status(200).json({
       statusOk: true,
