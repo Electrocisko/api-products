@@ -12,6 +12,7 @@ CREATE TABLE products (
   branch VARCHAR(30),
   gender VARCHAR(10),
   imageurl VARCHAR(255),
+  quantity_sold INTEGER DEFAULT 0,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 
