@@ -5,7 +5,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 import productRouter from './routes/productsRouter.js';
 import { loadData } from "./database/helper/loadData.js";
 
-const PORT = process.env.PORT;  
+const PORT = process.env.PORT || 3030;
 
 const app = express();
 
