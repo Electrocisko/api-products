@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 import productRouter from './routes/productsRouter.js';
 import { loadData } from "./database/helper/loadData.js";
+import {createTable} from "./database/helper/createTable.js";
 
 const PORT = process.env.PORT || 3030;
 
@@ -28,3 +29,4 @@ app.listen(PORT, () => {
 
 // Para cargar datos a la base desde un json
 //loadData();   
+createTable()
