@@ -372,8 +372,12 @@ const data2 = [
 ];
 
 export const loadData = async () => {
+
+  await pool.query('DROP TABLE probar');
+  await pool.query('DELETE FROM products');
+
   try {
-    data.map(async (item) => {
+    data2.map(async (item) => {
       const queryString = `INSERT INTO products (name, price, description,sizes_stock, color_stock, discount, style, branch, gender, imageurl)
     VALUES ('${item.name}',${item.price},
      '${item.description}',
