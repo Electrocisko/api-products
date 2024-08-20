@@ -325,7 +325,7 @@ const data2 = [
     style: "casual",
     branch: "generica",
     gender: "men",
-    imageurl: "polo_tshirt.png",
+    imageurl: "contrast-trim_tshirt.png",
   },
   {
     name: "Gradient Graphic T-shirt",
@@ -353,7 +353,7 @@ const data2 = [
     style: "casual",
     branch: "zara",
     gender: "men",
-    imageurl: "gradient_tshirt.png",
+    imageurl: "polo_tshirt.png",
   },
   {
     name: "Black Striped T-shirt",
