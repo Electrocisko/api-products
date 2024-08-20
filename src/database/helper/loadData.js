@@ -373,7 +373,6 @@ const data2 = [
 
 export const loadData = async () => {
 
-  await pool.query('DROP TABLE probar');
   await pool.query('DELETE FROM products');
 
   try {
