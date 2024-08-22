@@ -49,4 +49,27 @@ const getTopProducts = async (req, res) => {
   }
 };
 
-export { getAllProducts, getNewProducts, getTopProducts };
+const getProductById = async (req,res) => {
+  try {
+    const id = req.params.id;
+    const queryString = `SELECT * FROM ${tableName} WHERE product_id = ${id};`;
+    const data = await pool.query(queryString);
+    if (data.rowCount == 0) {
+      res.status(400).json({
+        statusOK: false,
+        message: " Product not found in database"
+      })
+    } 
+    res.status(200).json({
+      statusOk: true,
+      data: data.rows[0]
+    })
+  } catch (error) {
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+}
+
+export { getAllProducts, getNewProducts, getTopProducts, getProductById };

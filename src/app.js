@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 import productRouter from './routes/productsRouter.js';
 import cors from 'cors';
+// Para cargar los datos
 import { loadData } from "./database/helper/loadData.js";
 import {createTable} from "./database/helper/createTable.js";
 
