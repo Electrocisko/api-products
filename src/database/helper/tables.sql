@@ -21,12 +21,6 @@ CREATE TABLE sizes (
     size_name VARCHAR(50) NOT NULL
 );
 
--- Tabla de Colores
--- CREATE TABLE colors (
---     color_id SERIAL PRIMARY KEY,
---     color_name VARCHAR(50) NOT NULL
--- );
-
 -- Table de colores con rgb en hexadecimal
 CREATE TABLE colors (
     color_id SERIAL PRIMARY KEY,
@@ -63,14 +57,23 @@ CREATE TABLE stock (
    0,'casual','adidas','uni','chekered_shirt.png');
 
 
-
-
 -- Insertar Colores
 INSERT INTO colors (color_name, rgb_code) VALUES 
-('Rojo', '#FF0000'),
-('Verde', '#00FF00'),
-('Azul', '#0000FF'),
-('Amarillo', '#FFFF00');
+('Azul Marino','#1c698a'),
+('Naranja', '#c55c33'),
+('Violeta', '#442945'),
+('Verde Militar', '#4d452f'),
+('Rosa Vieja','#a3747d'),
+('Naranja oscura','#df5532'),
+('Verde Camisa','#6f8169'),
+('Blanco Tiza','#efe8e9'),
+('Marron','#825B32'),
+('Celeste','#6CBEC7'),
+('Ocre','#6CBEC7'),
+('Rojo alto','#6CBEC7'),
+('Rojo bajo','#982B1C')
+;
+
 
   -- Insertar tallas
 INSERT INTO sizes (size_name) 
@@ -174,4 +177,19 @@ WHERE
 GROUP BY 
     c.color_name, c.rgb_code;
 
-
+--Para buscar el stock de un producto por su id, codigo de color y nombre de talla seria:
+SELECT 
+    st.quantity,
+    c.color_name,
+    c.rgb_code,
+    sz.size_name
+FROM 
+    stock st
+JOIN 
+    colors c ON st.color_id = c.color_id
+JOIN 
+    sizes sz ON st.size_id = sz.size_id
+WHERE 
+    st.product_id = --<your_product_id>
+    AND c.rgb_code = --<your_rgb_code>
+    AND sz.size_name = --<your_size_name>;

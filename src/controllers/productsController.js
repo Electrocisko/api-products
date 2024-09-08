@@ -55,17 +55,6 @@ const getProductById = async (req, res) => {
     const query = `SELECT * FROM ${tableName} WHERE product_id = ${id};`;
 
     const queryAllData = `SELECT 
-    p.product_id,
-    p.name AS product_name,
-    p.price,
-    p.description,
-    p.discount,
-    p.style,
-    p.branch,
-    p.gender,
-    p.imageurl,
-    p.quantity_sold,
-    p.created_at,
     c.color_name,
 	  c.rgb_code,
     sz.size_name,
@@ -107,8 +96,9 @@ WHERE
     GROUP BY 
     sz.size_name;`;
 
-    const colorsAviable = await pool.query(queryColorsByProductId);
-    const sizesAviables = await pool.query(querySizesByProductId);
+    // const colorsAviable = await pool.query(queryColorsByProductId);
+    // const sizesAviables = await pool.query(querySizesByProductId);
+    const stockAviable = await pool.query(queryAllData);
 
     const data = await pool.query(query);
     if (data.rowCount == 0) {
@@ -120,8 +110,7 @@ WHERE
     res.status(200).json({
       statusOk: true,
       data: data.rows,
-      colors: colorsAviable.rows,
-      sizes:  sizesAviables.rows
+      stock: stockAviable.rows
     });
   } catch (error) {
     res.status(500).json({
