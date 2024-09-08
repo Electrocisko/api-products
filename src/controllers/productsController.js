@@ -71,33 +71,6 @@ WHERE
     p.product_id = ${id} 
     AND st.quantity > 0;`;
 
-    const queryColorsByProductId = `SELECT 
-    c.color_name,
-    c.rgb_code
-    FROM 
-    stock st
-    JOIN 
-    colors c ON st.color_id = c.color_id
-    WHERE 
-    st.product_id = ${id} 
-    AND st.quantity > 0
-    GROUP BY 
-    c.color_name, c.rgb_code;`;
-
-    const querySizesByProductId = `    SELECT 
-    sz.size_name
-    FROM 
-    stock st
-    JOIN 
-    sizes sz ON st.size_id = sz.size_id
-    WHERE 
-    st.product_id = ${id} 
-    AND st.quantity > 0
-    GROUP BY 
-    sz.size_name;`;
-
-    // const colorsAviable = await pool.query(queryColorsByProductId);
-    // const sizesAviables = await pool.query(querySizesByProductId);
     const stockAviable = await pool.query(queryAllData);
 
     const data = await pool.query(query);
