@@ -95,17 +95,28 @@ WHERE
 
 const createNewproduct = async (req, res) => {
   try {
-    const {name, price, description, discount, style, branch, gender} = req.body;
-    // Falta las validaciones de los datos
+    const {
+      name,
+      price,
+      description,
+      discount,
+      style,
+      branch,
+      gender,
+      imageurl,
+    } = req.body;
 
-    const query = `  INSERT INTO products (name,price, description, discount, style, branch,gender)
-  VALUES ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}');`;
+    let image;
+    !imageurl ? (image = "generico.png") : (image = imageurl);
 
- await pool.query(query);
+    const query = `  INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
+  VALUES ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}','${image}');`;
+
+    await pool.query(query);
 
     res.status(200).json({
       statusOk: true,
-      message: "Successfully added"
+      message: "Successfully added",
     });
   } catch (error) {
     res.status(500).json({
