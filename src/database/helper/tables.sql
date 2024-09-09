@@ -77,7 +77,7 @@ INSERT INTO colors (color_name, rgb_code) VALUES
 
   -- Insertar tallas
 INSERT INTO sizes (size_name) 
-VALUES ('S'), ('M'), ('L');
+VALUES ('S'), ('M'), ('L'), ('XL');
 
 -- Insertar stock
 

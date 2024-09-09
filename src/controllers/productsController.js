@@ -83,7 +83,7 @@ WHERE
     res.status(200).json({
       statusOk: true,
       data: data.rows,
-      stock: stockAviable.rows
+      stock: stockAviable.rows,
     });
   } catch (error) {
     res.status(500).json({
@@ -93,4 +93,32 @@ WHERE
   }
 };
 
-export { getAllProducts, getNewProducts, getTopProducts, getProductById };
+const createNewproduct = async (req, res) => {
+  try {
+    const {name, price, description, discount, style, branch, gender} = req.body;
+    // Falta las validaciones de los datos
+
+    const query = `  INSERT INTO products (name,price, description, discount, style, branch,gender)
+  VALUES ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}');`;
+
+ await pool.query(query);
+
+    res.status(200).json({
+      statusOk: true,
+      message: "Successfully added"
+    });
+  } catch (error) {
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+};
+
+export {
+  getAllProducts,
+  getNewProducts,
+  getTopProducts,
+  getProductById,
+  createNewproduct,
+};
