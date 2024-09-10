@@ -106,8 +106,9 @@ const createNewproduct = async (req, res) => {
       imageurl,
     } = req.body;
 
-    let image;
-    !imageurl ? (image = "generico.png") : (image = imageurl);
+     // Falta multer
+     let image;
+      !req.file ? (image = "generico.png") : (image = req.file.filename);
 
     const query = `  INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
   VALUES ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}','${image}');`;
