@@ -131,14 +131,11 @@ const createNewproduct = async (req, res) => {
 // Esto es para que el front pueda ver todos los colores
 const getAllColors = async (req, res) => {
   try {
-    const colors = await pool.query("SELECT rgb_code from colors;");
-    const colorList = [];
-    colors.rows.forEach((item) => {
-      colorList.push(item.rgb_code);
-    });
+    const colors = await pool.query("SELECT * from colors;");
+    const colorList = colors.rows;
     res.status(200).json({
       statusOk: true,
-      colors: colorList,
+      colorList
     });
   } catch (error) {
     res.status(500).json({
@@ -148,6 +145,23 @@ const getAllColors = async (req, res) => {
   }
 };
 
+// Controlador que trae todos los tallas.
+const getAllSizes = async (req,res) => {
+  try {
+    const sizes = await pool.query('SELECT * FROM sizes;')
+    const sizesList = sizes.rows
+    res.status(200).json({
+      statusOk: true,
+      sizesList
+    });
+  } catch (error) {
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+}
+
 export {
   getAllProducts,
   getNewProducts,
@@ -155,4 +169,5 @@ export {
   getProductById,
   createNewproduct,
   getAllColors,
+  getAllSizes
 };

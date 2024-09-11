@@ -42,19 +42,19 @@ CREATE TABLE stock (
     UNIQUE (product_id, color_id, size_id)
 );
 
---Insertar Producto
+--Insertar Producto y devuelve el id
   INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
   VALUES ('T-shirt with Tape Details',125,'This graphic t-shirt which is perfect for any occasion.
    Crafted from a soft and breathable fabric, it offers superior comfort and style.',
-   10,'casual','chemea','male','tape_details_tshirt.png');
+   10,'casual','chemea','male','tape_details_tshirt.png') RETURNING product_id;
 
   INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
   VALUES ('Skinny Fit Jeans',265,'Here is the description of the product.....',
-   20,'casual','wrangler','women','skinny_fit_jeans.png');
+   20,'casual','wrangler','women','skinny_fit_jeans.png') RETURNING product_id;
 
   INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
   VALUES ('Checkered Shirt',180,'Here is the description of the product.....',
-   0,'casual','adidas','uni','chekered_shirt.png');
+   0,'casual','adidas','uni','chekered_shirt.png') RETURNING product_id;
 
 
 -- Insertar Colores
