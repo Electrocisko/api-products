@@ -193,3 +193,4 @@ WHERE
     st.product_id = --<your_product_id>
     AND c.rgb_code = --<your_rgb_code>
     AND sz.size_name = --<your_size_name>;
+

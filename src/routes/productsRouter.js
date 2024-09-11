@@ -1,10 +1,11 @@
 import express from 'express';
-import {getAllProducts, getNewProducts, getTopProducts, getProductById, createNewproduct} from '../controllers/productsController.js';
+import {getAllProducts, getNewProducts, getTopProducts, getProductById, createNewproduct, getAllColors} from '../controllers/productsController.js';
 import upLoader from '../middlewares/uploadImage.js';
 
 const router = express.Router();
 
 router.get("/products", getAllProducts );
+router.get("/colors",getAllColors);
 router.get("/products/new",getNewProducts);
 router.get("/products/top", getTopProducts);
 router.get("/product/:id", getProductById);

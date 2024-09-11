@@ -106,18 +106,39 @@ const createNewproduct = async (req, res) => {
       imageurl,
     } = req.body;
 
-     // Falta multer
-     let image;
-      !req.file ? (image = "generico.png") : (image = req.file.filename);
+    // Falta multer
+    let image;
+    !req.file ? (image = "generico.png") : (image = req.file.filename);
 
     const query = `  INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
-  VALUES ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}','${image}');`;
+  VALUES ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}','${image}') RETURNING product_id;`;
 
-    await pool.query(query);
+    const id = await pool.query(query);
 
     res.status(200).json({
       statusOk: true,
       message: "Successfully added",
+      product_id: id.rows[0].product_id
+    });
+  } catch (error) {
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+};
+
+// Esto es para que el front pueda ver todos los colores
+const getAllColors = async (req, res) => {
+  try {
+    const colors = await pool.query("SELECT rgb_code from colors;");
+    const colorList = [];
+    colors.rows.forEach((item) => {
+      colorList.push(item.rgb_code);
+    });
+    res.status(200).json({
+      statusOk: true,
+      colors: colorList,
     });
   } catch (error) {
     res.status(500).json({
@@ -133,4 +154,5 @@ export {
   getTopProducts,
   getProductById,
   createNewproduct,
+  getAllColors,
 };
