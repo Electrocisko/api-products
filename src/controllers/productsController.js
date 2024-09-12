@@ -118,7 +118,7 @@ const createNewproduct = async (req, res) => {
     res.status(200).json({
       statusOk: true,
       message: "Successfully added",
-      product_id: id.rows[0].product_id
+      product_id: id.rows[0].product_id,
     });
   } catch (error) {
     res.status(500).json({
@@ -135,7 +135,7 @@ const getAllColors = async (req, res) => {
     const colorList = colors.rows;
     res.status(200).json({
       statusOk: true,
-      colorList
+      colorList,
     });
   } catch (error) {
     res.status(500).json({
@@ -146,13 +146,13 @@ const getAllColors = async (req, res) => {
 };
 
 // Controlador que trae todos los tallas.
-const getAllSizes = async (req,res) => {
+const getAllSizes = async (req, res) => {
   try {
-    const sizes = await pool.query('SELECT * FROM sizes;')
-    const sizesList = sizes.rows
+    const sizes = await pool.query("SELECT * FROM sizes;");
+    const sizesList = sizes.rows;
     res.status(200).json({
       statusOk: true,
-      sizesList
+      sizesList,
     });
   } catch (error) {
     res.status(500).json({
@@ -160,7 +160,30 @@ const getAllSizes = async (req,res) => {
       message: error.message,
     });
   }
-}
+};
+
+//Controlador que carga stocks
+const addStock = async (req, res) => {
+  try {
+    const { product_id, color_id, size_id, quantity } = req.body;
+
+    if (!product_id || !color_id || !size_id || !quantity) throw new Error("Incomplete data in the form")
+    // Falta validaciones
+
+    await pool.query(`INSERT INTO stock (product_id, color_id, size_id, quantity) 
+VALUES (${product_id}, ${color_id}, ${size_id}, ${quantity}); `);
+
+    res.status(200).json({
+      statusOk: true,
+      message: "Proxima stock",
+    });
+  } catch (error) {
+    res.status(500).json({
+      statusOk: false,
+      message: error.message
+    });
+  }
+};
 
 export {
   getAllProducts,
@@ -169,5 +192,6 @@ export {
   getProductById,
   createNewproduct,
   getAllColors,
-  getAllSizes
+  getAllSizes,
+  addStock,
 };
