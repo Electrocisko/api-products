@@ -201,21 +201,24 @@ const addNewFullProduct = async (req, res) => {
       color_id,
       size_id,
       quantity,
+      sizeXS,
       sizeS,
       sizeM,
       sizeL,
-      sizeXL
-
+      sizeXL,
+      sizeXXL,
+      size3XL
     } = req.body;
 
 
 // Valores predeterminados usando operadores lógicos
+let querySize_XS = sizeXS || 0;
 let querySize_S = sizeS || 0;
 let querySize_M = sizeM || 0;
 let querySize_L = sizeL || 0;
 let querySize_XL = sizeXL || 0;
-
-
+let querySize_XXL = sizeXXL || 0;
+let querySize_3XL = size3XL || 0;
 
     //  multer
     let image;
@@ -230,6 +233,9 @@ let querySize_XL = sizeXL || 0;
                         INSERT INTO products (name, price, description, discount, style, branch, gender, imageurl)
                         VALUES  ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}','${image}')
                         RETURNING product_id INTO new_product_id;
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, ${color_id}, 1, ${querySize_XS});
                         
                         INSERT INTO stock (product_id, color_id, size_id, quantity)
                         VALUES (new_product_id, ${color_id}, 2, ${querySize_S});
@@ -243,13 +249,14 @@ let querySize_XL = sizeXL || 0;
                         INSERT INTO stock (product_id, color_id, size_id, quantity)
                         VALUES (new_product_id, ${color_id}, 5, ${querySize_XL});
 
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, ${color_id}, 6, ${querySize_XXL});
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, ${color_id}, 7, ${querySize_3XL});
                     END $$;`;
 
-                
-
     const response = await pool.query(query);
-
-    console.log(response);
 
     res.status(200).json({
       statusOk: true,
