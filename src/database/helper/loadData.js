@@ -135,17 +135,54 @@ const data2 = [
   },
 ];
 
+
 export const loadData = async () => {
   await pool.query("DELETE FROM products");
 
   try {
     data2.map(async (item) => {
-      const queryString = `INSERT INTO products (name, price, description, discount, style, branch, gender, imageurl)
-    VALUES ('${item.name}',${item.price},
-     '${item.description}',
-      ${item.discount}, 
-      '${item.style}', '${item.branch}', '${item.gender}', '${item.imageurl}'
-      );`;
+      const queryString = `DO $$
+DECLARE
+    new_product_id INT;
+BEGIN
+    INSERT INTO products (name, price, description, discount, style, branch, gender, imageurl, quantity_sold)
+    VALUES ('${item.name}', ${item.price}, '${item.description}', ${item.discount}, '${item.style}', '${item.branch}', '${item.gender}', '${item.imageurl}', 0)
+    RETURNING product_id INTO new_product_id;
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, 11, 1, 10);
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, 11, 2, 10);
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, 11, 3, 10);
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, 11, 4, 10);
+                                                INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, 31, 1, 10);
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, 31, 2, 10);
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, 31, 3, 10);
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, 31, 4, 10);
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, 20, 1, 10);
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, 20, 2, 10);
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, 20, 3, 10);
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, 20, 4, 10);
+  END $$;`  
       await pool.query(queryString);
     });
   } catch (error) {
