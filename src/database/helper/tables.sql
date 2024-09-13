@@ -35,7 +35,7 @@ CREATE TABLE stock (
     product_id INT NOT NULL,
     color_id INT NOT NULL,
     size_id INT NOT NULL,
-    quantity INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 0, 
     FOREIGN KEY (product_id) REFERENCES products(product_id),
     FOREIGN KEY (color_id) REFERENCES colors(color_id),
     FOREIGN KEY (size_id) REFERENCES sizes(size_id),
@@ -57,30 +57,46 @@ CREATE TABLE stock (
    0,'casual','adidas','uni','chekered_shirt.png') RETURNING product_id;
 
 
--- Insertar Colores
-INSERT INTO colors (color_name, rgb_code) VALUES 
-('Azul Marino','#1c698a'),
-('Naranja', '#c55c33'),
-('Violeta', '#442945'),
-('Verde Militar', '#4d452f'),
-('Rosa Vieja','#a3747d'),
-('Naranja oscura','#df5532'),
-('Verde Camisa','#6f8169'),
-('Blanco Tiza','#efe8e9'),
-('Marron','#825B32'),
-('Celeste','#6CBEC7'),
-('Ocre','#6CBEC7'),
-('Rojo alto','#6CBEC7'),
-('Rojo bajo','#982B1C')
-;
+INSERT INTO colors (color_name, rgb_code) VALUES
+    ('Negro', '#000000'),
+    ('Blanco', '#FFFFFF'),
+    ('Rojo', '#FF0000'),
+    ('Verde', '#00FF00'),
+    ('Azul', '#0000FF'),
+    ('Amarillo', '#FFFF00'),
+    ('Cyan', '#00FFFF'),
+    ('Magenta', '#FF00FF'),
+    ('Gris', '#808080'),
+    ('Rosa', '#FFC0CB'),
+    ('Naranja', '#FFA500'),
+    ('Marrón', '#A52A2A'),
+    ('Beige', '#F5F5DC'),
+    ('Violeta', '#800080'),
+    ('Turquesa', '#40E0D0'),
+    ('Oliva', '#808000'),
+    ('Lila', '#C8A2C8'),
+    ('Azul Claro', '#ADD8E6'),
+    ('Rojo Oscuro', '#8B0000'),
+    ('Verde Oliva', '#6B8E23'),
+    ('Gris Claro', '#D3D3D3'),
+    ('Naranja Claro', '#FFD700'),
+    ('Rosa Claro', '#FFB6C1'),
+    ('Marrón Claro', '#D2B48C'),
+    ('Gris Oscuro', '#A9A9A9'),
+    ('Rojo Coral', '#FF7F50'),
+    ('Verde Pastel', '#77DD77'),
+    ('Azul Marino', '#000080'),
+    ('Beige Claro', '#F5F5F5'),
+    ('Púrpura', '#800080'),
+    ('Café', '#4B0082');
+
 
 
   -- Insertar tallas
 INSERT INTO sizes (size_name) 
-VALUES ('S'), ('M'), ('L'), ('XL');
+VALUES ('XS'),('S'), ('M'), ('L'), ('XL'), ('XXL'), ('3XL');
 
 -- Insertar stock
-
 INSERT INTO stock (product_id, color_id, size_id, quantity) 
 VALUES (14, 1, 1, 50), 
        (14, 1, 2, 30),  
@@ -193,4 +209,24 @@ WHERE
     st.product_id = --<your_product_id>
     AND c.rgb_code = --<your_rgb_code>
     AND sz.size_name = --<your_size_name>;
+
+-- Para ingresar un Producto nuevo con el stock.
+
+DO $$
+DECLARE
+    new_product_id INT;
+BEGIN
+    -- Paso 1: Insertar el nuevo producto
+    INSERT INTO products (name, price, description, discount, style, branch, gender, imageurl, quantity_sold)
+    VALUES ('Nombre del Producto', 99.99, 'Descripción del Producto', 10, 'Estilo', 'Sucursal', 'Género', 'http://example.com/image.jpg', 0)
+    RETURNING product_id INTO new_product_id;
+    
+    -- Paso 2: Insertar el stock para el nuevo producto
+    INSERT INTO stock (product_id, color_id, size_id, quantity)
+    VALUES (new_product_id, 1, 2, 50); -- Aquí debes reemplazar 1 y 2 con los IDs reales de color y talla, y 50 con la cantidad deseada
+
+    -- Puedes insertar más filas en la tabla stock si es necesario
+    -- INSERT INTO stock (product_id, color_id, size_id, quantity)
+    -- VALUES (new_product_id, otro_color_id, otra_talla_id, otra_cantidad);
+END $$;
 

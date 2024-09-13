@@ -167,7 +167,8 @@ const addStock = async (req, res) => {
   try {
     const { product_id, color_id, size_id, quantity } = req.body;
 
-    if (!product_id || !color_id || !size_id || !quantity) throw new Error("Incomplete data in the form")
+    if (!product_id || !color_id || !size_id || !quantity)
+      throw new Error("Incomplete data in the form");
     // Falta validaciones
 
     await pool.query(`INSERT INTO stock (product_id, color_id, size_id, quantity) 
@@ -180,7 +181,85 @@ VALUES (${product_id}, ${color_id}, ${size_id}, ${quantity}); `);
   } catch (error) {
     res.status(500).json({
       statusOk: false,
-      message: error.message
+      message: error.message,
+    });
+  }
+};
+
+//Controlador que carga producto nuevo con su stock.
+const addNewFullProduct = async (req, res) => {
+  try {
+    const {
+      name,
+      price,
+      description,
+      discount,
+      style,
+      branch,
+      gender,
+      imageurl,
+      color_id,
+      size_id,
+      quantity,
+      sizeS,
+      sizeM,
+      sizeL,
+      sizeXL
+
+    } = req.body;
+
+
+// Valores predeterminados usando operadores lógicos
+let querySize_S = sizeS || 0;
+let querySize_M = sizeM || 0;
+let querySize_L = sizeL || 0;
+let querySize_XL = sizeXL || 0;
+
+
+
+    //  multer
+    let image;
+    !req.file ? (image = "generico.png") : (image = req.file.filename);
+
+
+// FALTA VER EL TEMA DE LOS ID DE STOCKS
+    const query = `DO $$
+                    DECLARE
+                        new_product_id INT;
+                    BEGIN
+                        INSERT INTO products (name, price, description, discount, style, branch, gender, imageurl)
+                        VALUES  ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}','${image}')
+                        RETURNING product_id INTO new_product_id;
+                        
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, ${color_id}, 2, ${querySize_S});
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, ${color_id}, 3, ${querySize_M});
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, ${color_id}, 4, ${querySize_L});
+
+                        INSERT INTO stock (product_id, color_id, size_id, quantity)
+                        VALUES (new_product_id, ${color_id}, 5, ${querySize_XL});
+
+                    END $$;`;
+
+                
+
+    const response = await pool.query(query);
+
+    console.log(response);
+
+    res.status(200).json({
+      statusOk: true,
+      message: "Successfully added",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
     });
   }
 };
@@ -194,4 +273,5 @@ export {
   getAllColors,
   getAllSizes,
   addStock,
+  addNewFullProduct,
 };
