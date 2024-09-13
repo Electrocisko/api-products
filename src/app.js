@@ -32,5 +32,5 @@ app.listen(PORT, () => {
 
 
 // Para cargar datos a la base desde un json
-  loadData();   
+  //loadData();   
 //createTable()
