@@ -74,17 +74,14 @@ WHERE
     const stockAviable = await pool.query(queryAllData);
 
     const data = await pool.query(query);
-    if (data.rowCount == 0) {
-      res.status(400).json({
-        statusOK: false,
-        message: " Product not found in database",
+    if (data.rowCount == 0) throw new Error("Product not found in database")
+      res.status(200).json({
+        statusOk: true,
+        data: data.rows,
+        stock: stockAviable.rows,
       });
-    }
-    res.status(200).json({
-      statusOk: true,
-      data: data.rows,
-      stock: stockAviable.rows,
-    });
+    
+ 
   } catch (error) {
     res.status(500).json({
       statusOk: false,
@@ -207,25 +204,23 @@ const addNewFullProduct = async (req, res) => {
       sizeL,
       sizeXL,
       sizeXXL,
-      size3XL
+      size3XL,
     } = req.body;
 
-
-// Valores predeterminados usando operadores lógicos
-let querySize_XS = sizeXS || 0;
-let querySize_S = sizeS || 0;
-let querySize_M = sizeM || 0;
-let querySize_L = sizeL || 0;
-let querySize_XL = sizeXL || 0;
-let querySize_XXL = sizeXXL || 0;
-let querySize_3XL = size3XL || 0;
+    // Valores predeterminados usando operadores lógicos
+    let querySize_XS = sizeXS || 0;
+    let querySize_S = sizeS || 0;
+    let querySize_M = sizeM || 0;
+    let querySize_L = sizeL || 0;
+    let querySize_XL = sizeXL || 0;
+    let querySize_XXL = sizeXXL || 0;
+    let querySize_3XL = size3XL || 0;
 
     //  multer
     let image;
     !req.file ? (image = "generico.png") : (image = req.file.filename);
 
-
-// FALTA VER EL TEMA DE LOS ID DE STOCKS
+    // FALTA VER EL TEMA DE LOS ID DE STOCKS
     const query = `DO $$
                     DECLARE
                         new_product_id INT;
@@ -263,7 +258,26 @@ let querySize_3XL = size3XL || 0;
       message: "Successfully added",
     });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+};
+
+//Borra producto por Id
+const deleteProductById = async (req, res) => {
+  try {
+    const {id} = req.params;  
+    await pool.query(`DELETE FROM stock WHERE product_id = ${id};`)
+    const productDeleteResponse = await pool.query(`DELETE FROM products WHERE product_id = ${id};`)
+   if (productDeleteResponse.rowCount == 0) throw new Error("The product ID does not exist") 
+    res.status(200).json({
+      statusOk: true,
+      message: "Here delete product",
+      id
+    });
+  } catch (error) {
     res.status(500).json({
       statusOk: false,
       message: error.message,
@@ -281,4 +295,5 @@ export {
   getAllSizes,
   addStock,
   addNewFullProduct,
+  deleteProductById,
 };
