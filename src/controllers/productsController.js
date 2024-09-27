@@ -1,4 +1,5 @@
 import { pool } from "../database/postgres.js";
+import fs from "fs";
 
 const tableName = "products";
 
@@ -74,14 +75,12 @@ WHERE
     const stockAviable = await pool.query(queryAllData);
 
     const data = await pool.query(query);
-    if (data.rowCount == 0) throw new Error("Product not found in database")
-      res.status(200).json({
-        statusOk: true,
-        data: data.rows,
-        stock: stockAviable.rows,
-      });
-    
- 
+    if (data.rowCount == 0) throw new Error("Product not found in database");
+    res.status(200).json({
+      statusOk: true,
+      data: data.rows,
+      stock: stockAviable.rows,
+    });
   } catch (error) {
     res.status(500).json({
       statusOk: false,
@@ -268,14 +267,18 @@ const addNewFullProduct = async (req, res) => {
 //Borra producto por Id
 const deleteProductById = async (req, res) => {
   try {
-    const {id} = req.params;  
-    await pool.query(`DELETE FROM stock WHERE product_id = ${id};`)
-    const productDeleteResponse = await pool.query(`DELETE FROM products WHERE product_id = ${id};`)
-   if (productDeleteResponse.rowCount == 0) throw new Error("The product ID does not exist") 
-    res.status(200).json({
+    const { id } = req.params;
+    await pool.query(`DELETE FROM stock WHERE product_id = ${id};`);
+    const productDeleteResponse = await pool.query(
+      `DELETE FROM products WHERE product_id = ${id} RETURNING *;`
+    );
+    if (productDeleteResponse.rowCount == 0) {throw new Error("The product ID does not exist");}
+    fs.unlinkSync(`src/public/images/${productDeleteResponse.rows[0].imageurl}`)
+
+    res.status(200).json({  
       statusOk: true,
       message: "Here delete product",
-      id
+      id,
     });
   } catch (error) {
     res.status(500).json({
