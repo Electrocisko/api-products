@@ -273,7 +273,9 @@ const deleteProductById = async (req, res) => {
       `DELETE FROM products WHERE product_id = ${id} RETURNING *;`
     );
     if (productDeleteResponse.rowCount == 0) {throw new Error("The product ID does not exist");}
-    fs.unlinkSync(`src/public/images/${productDeleteResponse.rows[0].imageurl}`)
+    if (productDeleteResponse.rows[0].imageurl != "generico.png") {
+      fs.unlinkSync(`src/public/images/${productDeleteResponse.rows[0].imageurl}`)
+    }
 
     res.status(200).json({  
       statusOk: true,
