@@ -50,6 +50,70 @@ const getTopProducts = async (req, res) => {
   }
 };
 
+const getOnsaleProducts = async (req, res) => {
+  try {
+    const queryString = `SELECT * FROM ${tableName} WHERE discount > 0;`;
+    const data = await pool.query(queryString);
+    res.status(200).json({
+      statusOk: true,
+      onsale: data.rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+};
+
+const getWomenProducts = async (req, res) => {
+  try {
+    const queryString = `SELECT * FROM ${tableName} WHERE gender = 'women' OR gender = 'uni';`;
+    const data = await pool.query(queryString);
+    res.status(200).json({
+      statusOk: true,
+      products: data.rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+};
+
+const getMenProducts = async (req, res) => {
+  try {
+    const queryString = `SELECT * FROM ${tableName} WHERE gender = 'men' OR gender = 'uni';`;
+    const data = await pool.query(queryString);
+    res.status(200).json({
+      statusOk: true,
+      products: data.rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+};
+
+const getUniProducts = async (req, res) => {
+  try {
+    const queryString = `SELECT * FROM ${tableName} WHERE gender = 'uni';`;
+    const data = await pool.query(queryString);
+    res.status(200).json({
+      statusOk: true,
+      products: data.rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+};
+
 const getProductById = async (req, res) => {
   try {
     const id = req.params.id;
@@ -272,12 +336,16 @@ const deleteProductById = async (req, res) => {
     const productDeleteResponse = await pool.query(
       `DELETE FROM products WHERE product_id = ${id} RETURNING *;`
     );
-    if (productDeleteResponse.rowCount == 0) {throw new Error("The product ID does not exist");}
+    if (productDeleteResponse.rowCount == 0) {
+      throw new Error("The product ID does not exist");
+    }
     if (productDeleteResponse.rows[0].imageurl != "generico.png") {
-      fs.unlinkSync(`src/public/images/${productDeleteResponse.rows[0].imageurl}`)
+      fs.unlinkSync(
+        `src/public/images/${productDeleteResponse.rows[0].imageurl}`
+      );
     }
 
-    res.status(200).json({  
+    res.status(200).json({
       statusOk: true,
       message: "Here delete product",
       id,
@@ -301,4 +369,8 @@ export {
   addStock,
   addNewFullProduct,
   deleteProductById,
+  getOnsaleProducts,
+  getMenProducts,
+  getWomenProducts,
+  getUniProducts
 };

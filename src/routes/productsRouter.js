@@ -9,7 +9,12 @@ import {
   getAllSizes,
   addStock,
   addNewFullProduct,
-  deleteProductById
+  deleteProductById,
+  getOnsaleProducts,
+  getMenProducts,
+  getUniProducts,
+  getWomenProducts
+
 } from "../controllers/productsController.js";
 import upLoader from "../middlewares/uploadImage.js";
 
@@ -20,6 +25,10 @@ router.get("/colors", getAllColors);
 router.get("/sizes", getAllSizes);
 router.get("/products/new", getNewProducts);
 router.get("/products/top", getTopProducts);
+router.get("/products/onsale",getOnsaleProducts);
+router.get("/products/women",getWomenProducts);
+router.get("/products/men",getMenProducts);
+router.get("/products/uni",getUniProducts);
 router.get("/product/:id", getProductById);
 router.post("/product", upLoader.single("imageurl"), createNewproduct);
 router.post("/fullproduct", upLoader.single("imageurl"), addNewFullProduct);
