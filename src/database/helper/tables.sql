@@ -42,6 +42,24 @@ CREATE TABLE stock (
     UNIQUE (product_id, color_id, size_id)
 );
 
+-- Tabla de stock, con la imagen asociado a cada color.
+
+CREATE TABLE stock (
+    id SERIAL PRIMARY KEY,
+    product_id INT NOT NULL,
+    color_id INT NOT NULL,
+    size_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 0,
+    imageurl VARCHAR(255), -- Nueva columna para la imagen específica
+    FOREIGN KEY (product_id) REFERENCES products(product_id),
+    FOREIGN KEY (color_id) REFERENCES colors(color_id),
+    FOREIGN KEY (size_id) REFERENCES sizes(size_id),
+    UNIQUE (product_id, color_id, size_id)
+);
+
+
+
+
 --Insertar Producto y devuelve el id
   INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
   VALUES ('T-shirt with Tape Details',125,'This graphic t-shirt which is perfect for any occasion.
