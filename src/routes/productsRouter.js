@@ -32,7 +32,7 @@ router.get("/products/uni",getUniProducts);
 router.get("/product/:id", getProductById);
 router.post("/product", upLoader.single("imageurl"), createNewproduct);
 router.post("/fullproduct", upLoader.single("imageurl"), addNewFullProduct);
-router.post("/stock", addStock);
+router.post("/stock",upLoader.single("imageurl"), addStock);
 router.delete("/product/:id", deleteProductById);
 
 export default router;

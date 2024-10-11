@@ -123,7 +123,8 @@ const getProductById = async (req, res) => {
     c.color_name,
 	  c.rgb_code,
     sz.size_name,
-    st.quantity
+    st.quantity,
+    st.imageurl
 FROM 
     products p
 JOIN 
@@ -225,18 +226,22 @@ const getAllSizes = async (req, res) => {
 //Controlador que carga stocks
 const addStock = async (req, res) => {
   try {
-    const { product_id, color_id, size_id, quantity } = req.body;
+    const { product_id, color_id, size_id, quantity, imageurl } = req.body;
+
+    //  multer
+    let image;
+    !req.file ? (image = "generico.png") : (image = req.file.filename);
 
     if (!product_id || !color_id || !size_id || !quantity)
-      throw new Error("Incomplete data in the form");
+      throw new Error("Incomplete data in the form.");
     // Falta validaciones
 
-    await pool.query(`INSERT INTO stock (product_id, color_id, size_id, quantity) 
-VALUES (${product_id}, ${color_id}, ${size_id}, ${quantity}); `);
+    await pool.query(`INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl) 
+VALUES (${product_id}, ${color_id}, ${size_id}, ${quantity}, '${image}'); `);
 
     res.status(200).json({
       statusOk: true,
-      message: "Proxima stock",
+      message: "Stock Agregado",
     });
   } catch (error) {
     res.status(500).json({
@@ -270,6 +275,9 @@ const addNewFullProduct = async (req, res) => {
       size3XL,
     } = req.body;
 
+
+
+
     // Valores predeterminados usando operadores lógicos
     let querySize_XS = sizeXS || 0;
     let querySize_S = sizeS || 0;
@@ -292,27 +300,29 @@ const addNewFullProduct = async (req, res) => {
                         VALUES  ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}','${image}')
                         RETURNING product_id INTO new_product_id;
 
-                        INSERT INTO stock (product_id, color_id, size_id, quantity)
-                        VALUES (new_product_id, ${color_id}, 1, ${querySize_XS});
+                        INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
+                        VALUES (new_product_id, ${color_id}, 1, ${querySize_XS},'${image}');
                         
-                        INSERT INTO stock (product_id, color_id, size_id, quantity)
-                        VALUES (new_product_id, ${color_id}, 2, ${querySize_S});
+                          INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
+                        VALUES (new_product_id, ${color_id}, 2, ${querySize_S},'${image}');
 
-                        INSERT INTO stock (product_id, color_id, size_id, quantity)
-                        VALUES (new_product_id, ${color_id}, 3, ${querySize_M});
+                          INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
+                        VALUES (new_product_id, ${color_id}, 3, ${querySize_M},'${image}');
 
-                        INSERT INTO stock (product_id, color_id, size_id, quantity)
-                        VALUES (new_product_id, ${color_id}, 4, ${querySize_L});
+                          INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
+                        VALUES (new_product_id, ${color_id}, 4, ${querySize_L},'${image}');
 
-                        INSERT INTO stock (product_id, color_id, size_id, quantity)
-                        VALUES (new_product_id, ${color_id}, 5, ${querySize_XL});
+                          INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
+                        VALUES (new_product_id, ${color_id}, 5, ${querySize_XL},'${image}');
 
-                        INSERT INTO stock (product_id, color_id, size_id, quantity)
-                        VALUES (new_product_id, ${color_id}, 6, ${querySize_XXL});
+                          INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
+                        VALUES (new_product_id, ${color_id}, 6, ${querySize_XXL},'${image}');
 
-                        INSERT INTO stock (product_id, color_id, size_id, quantity)
-                        VALUES (new_product_id, ${color_id}, 7, ${querySize_3XL});
+                          INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
+                        VALUES (new_product_id, ${color_id}, 7, ${querySize_3XL},'${image}');
                     END $$;`;
+
+            
 
     const response = await pool.query(query);
 

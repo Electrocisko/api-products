@@ -121,6 +121,12 @@ VALUES (14, 1, 1, 50),
        (14, 2, 1, 20);  
 
 
+INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl) 
+VALUES (30, 1, 1, 50,'bigote.png'), 
+       (30, 1, 2, 30,'bigote.png'),  
+       (30, 2, 1, 20,'generico.png');
+
+
 -- Traer todo desde tabla de stock
 SELECT *
 FROM stock

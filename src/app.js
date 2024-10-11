@@ -5,11 +5,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 import productRouter from './routes/productsRouter.js';
 import cors from 'cors';
 // Para cargar los datos
- import { loadData } from "./database/helper/loadData.js";
+import { loadData } from "./database/helper/loadData.js";
 // import {createTable} from "./database/helper/createTable.js";
 
 const PORT = process.env.PORT || 3030;
-
 const app = express();
 
 app.use(express.json());
@@ -23,7 +22,6 @@ app.use("/api",productRouter )
 app.get("/", (req,res) => {
     res.status(200).send("<h1>Api Ecommerce</h1>")
 })
-
 
 app.listen(PORT, () => {
     console.log( `Servidor levantado en http://localhost:${PORT}`);
