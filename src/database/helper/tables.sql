@@ -254,3 +254,31 @@ BEGIN
     -- VALUES (new_product_id, otro_color_id, otra_talla_id, otra_cantidad);
 END $$;
 
+
+---------Tabla de usuarios -----------------
+
+CREATE TABLE users(
+	user_id SERIAL PRIMARY KEY,
+	name VARCHAR(50) NOT NULL,
+	lastname VARCHAR(50) NOT NULL,
+	email VARCHAR(100) UNIQUE NOT NULL,
+	password VARCHAR(255) NOT NULL,
+	phone VARCHAR(15),
+	creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    rol VARCHAR(20) DEFAULT 'user'
+);
+
+-- Direciones--
+
+CREATE TABLE addresses (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    address_line1 VARCHAR(255) NOT NULL,
+    address_line2 VARCHAR(255),
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(20) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
+);
