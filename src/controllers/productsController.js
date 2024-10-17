@@ -276,8 +276,6 @@ const addNewFullProduct = async (req, res) => {
     } = req.body;
 
 
-
-
     // Valores predeterminados usando operadores lógicos
     let querySize_XS = sizeXS || 0;
     let querySize_S = sizeS || 0;
