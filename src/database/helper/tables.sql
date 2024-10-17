@@ -282,3 +282,11 @@ CREATE TABLE addresses (
     country VARCHAR(100) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
 );
+
+
+--Insertar un usuario ---
+
+INSERT INTO users (name, lastname, email, password, phone)
+VALUES ('Olivia', 'Rodrigo', 'oliviarodri@gmail.com', '1234','11-4598-7812'),
+('Charlotte', 'Witte', 'charlotte_witte@gmail.com', '1234','11-5879-9745');
+
