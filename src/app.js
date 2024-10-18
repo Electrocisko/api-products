@@ -50,6 +50,11 @@ app.get("/", (req, res) => {
   res.status(200).send("<h1>Api Ecommerce</h1>");
 });
 
+app.get("/error", (req,res) => {
+  console.log( req.session.messages)
+  res.send("<h1>Error</h1>");
+})
+
 app.listen(PORT, () => {
   console.log(`Servidor levantado en http://localhost:${PORT}`);
 });

@@ -16,17 +16,14 @@ const initializePassport = () => {
           usernameField: "email",
         },
         async (req, email, password, done) => {
-          const { name, lastname,  password2, phone } =
-            req.body;
+          const { name, lastname, password2, phone } = req.body;
           if (!name) return done(null, false, { message: "Missing Name" });
           if (!lastname)
             return done(null, false, { message: "Missing Lastname" });
-        
           if (!password || !password2)
             return done(null, false, { message: "Missing Password" });
           if (password != password2)
             return done(null, false, { message: "Paswords don't match" });
-
           const exists = await pool.query(
             `SELECT * FROM users WHERE email = '${email}';`
           );
@@ -49,23 +46,37 @@ const initializePassport = () => {
 
     passport.use(
       "login",
-      new LocalStrategy(async (email, password, done) => {
+      new LocalStrategy(
+        {
+          usernameField: "email",
+        },
+        async (email, password, done) => {
+      
+          const data = await pool.query(
+            `SELECT * FROM users WHERE email = '${email}';`
+          );
+          const userDB = data.rows[0];
 
-        //const userDB = await User.findOne({ username });
-        const data = await pool.query(
-          `SELECT * FROM users WHERE email = '${email}';`
-        );
-        const userDB = data.rows[0];
-        if (!userDB) return done(null, false, { message: "No existe usuario" });
-        const valid = await isValidPassword(userDB.password, password);
-        if (valid) {
-          return done(null, userDB);
+          if (!userDB)
+            return done(null, false, { message: "No existe usuario" });
+
+          console.log(userDB.password);
+          console.log(password);
+
+          const valid = await isValidPassword (password, userDB.password);
+
+          console.log(`bcrypt me devuelve: ${valid}`);
+
+   
+          if (valid) {
+            return done(null, userDB);
+          }
+          return done(null, false, {
+            message: "error en validacion de usuario",
+          });
         }
-        return done(null, false, { message: "error en validacion de usuario" });
-      })
+      )
     );
-
-
 
     passport.serializeUser((user, done) => {
       done(null, user);

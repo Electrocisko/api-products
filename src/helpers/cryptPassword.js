@@ -5,6 +5,10 @@ const createHash = async (password) => {
   return bcrypt.hash(password, salts);
 };
 
-const isValidPassword = (user, data) => bcrypt.compare(data, user.password);
+const isValidPassword = async(plaintext, hash) => {
+const result =  await (bcrypt.compare(plaintext, hash))
+return result;
+}
 
 export { createHash, isValidPassword };
+  
