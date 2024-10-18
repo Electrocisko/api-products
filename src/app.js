@@ -5,6 +5,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 import productRouter from "./routes/productsRouter.js";
 import userRouter from "./routes/usersRouter.js";
 import sessionRouter from "./routes/sessionsRouter.js";
+import initPassportLocal from "./helpers/passport.config.js";
+import passport from "passport";
+import session from 'express-session';
+
+
+
 import cors from "cors";
 // Para cargar los datos
 import { loadData } from "./database/helper/loadData.js";
@@ -17,6 +23,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
 app.use(cors());
+
+// sesions
+app.use(session({
+  secret: process.env.SECRET_SESSION,
+  cookie: {
+  httpOnly: false,
+  secure: false,
+  maxAge: 36000
+  },
+  rolling: true,
+  resave: true,
+  saveUninitialized: false
+  }));
+
+initPassportLocal();
+app.use(passport.initialize());
+app.use(passport.session());
 
 //routers
 app.use("/api", productRouter);

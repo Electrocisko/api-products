@@ -1,5 +1,4 @@
 import { pool } from "../database/postgres.js";
-
 const tableName = "users";
 
 const getAllUsers = async (req, res) => {
@@ -21,6 +20,7 @@ const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
     const data = await pool.query(`SELECT * FROM users WHERE user_id = '${id}';`);
+
     if (data.rowCount == 0)  {res.status(400).json({statusOK: false, message: "No user was found with the id"}) } else {
         res.status(200).json({
             statusOk: true,
