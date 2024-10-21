@@ -51,7 +51,6 @@ const initializePassport = () => {
           usernameField: "email",
         },
         async (email, password, done) => {
-      
           const data = await pool.query(
             `SELECT * FROM users WHERE email = '${email}';`
           );
@@ -59,15 +58,7 @@ const initializePassport = () => {
 
           if (!userDB)
             return done(null, false, { message: "No existe usuario" });
-
-          console.log(userDB.password);
-          console.log(password);
-
-          const valid = await isValidPassword (password, userDB.password);
-
-          console.log(`bcrypt me devuelve: ${valid}`);
-
-   
+          const valid = await isValidPassword(password, userDB.password);
           if (valid) {
             return done(null, userDB);
           }
