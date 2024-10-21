@@ -1,5 +1,5 @@
 import express from "express";
-import {registerUser, userLogin,userLogout} from "../controllers/sessionController.js";
+import {registerUser, userLogin,userLogout, currentUser} from "../controllers/sessionController.js";
 import passport from "passport";
 
 
@@ -10,6 +10,8 @@ router.post("/sessions/register", passport.authenticate('register'), registerUse
 router.post("/sessions/login", passport.authenticate('login'),userLogin);
 
 router.post('/sessions/logout', userLogout );
+
+router.get('/sessions/current', currentUser );
 
 
 

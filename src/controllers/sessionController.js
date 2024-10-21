@@ -13,7 +13,7 @@ const registerUser = async (req, res) => {
       user
     });
   } catch (error) {
-    res.status(code).json({
+    res.status(500).json({
       statusOk: false,
       message: error.message,
     });
@@ -23,14 +23,13 @@ const registerUser = async (req, res) => {
 
 const userLogin = async (req, res) => {
   try {
-      req.session.user = req.user;
       return res.json({
         statusOk: true,
         message: "User loged successfully",
       });
   } catch (error) {
     return res.json({
-      status: "error",
+      statusOk: false,
       message: error.message,
     });
   }
@@ -38,9 +37,12 @@ const userLogin = async (req, res) => {
 
 
 const userLogout = (req, res) => {
-  req.logout((err) => {
-      if (err) {
-          return res.status(500).json({ message: 'Error logging out' });
+  req.logout((error) => {
+      if (error) {
+          return res.status(500).json({
+            statusOk: false,
+            message: error.message,
+          });
       }
       res.json({ 
         statusOk: true,
@@ -50,4 +52,30 @@ const userLogout = (req, res) => {
 };
 
 
-export { registerUser, userLogin , userLogout};
+// Tendria que usar un DTO
+const currentUser =  (req, res) => {
+
+
+  try {
+    if (!req.user)  throw new Error("There is no User logged in")
+    return res.json({
+      statusOk: true,
+      message: "Current User",
+      user: req.user
+  
+    });
+  } catch (error) {
+    return res.json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+}
+
+
+
+
+
+
+
+export { registerUser, userLogin , userLogout, currentUser};

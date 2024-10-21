@@ -340,6 +340,9 @@ const addNewFullProduct = async (req, res) => {
 const deleteProductById = async (req, res) => {
   try {
     const { id } = req.params;
+
+    console.log(id);
+
     await pool.query(`DELETE FROM stock WHERE product_id = ${id};`);
     const productDeleteResponse = await pool.query(
       `DELETE FROM products WHERE product_id = ${id} RETURNING *;`

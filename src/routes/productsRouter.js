@@ -17,6 +17,7 @@ import {
 
 } from "../controllers/productsController.js";
 import upLoader from "../middlewares/uploadImage.js";
+import checkAuth from "../middlewares/checkAuth.js";
 
 const router = express.Router();
 
@@ -30,9 +31,11 @@ router.get("/products/women",getWomenProducts);
 router.get("/products/men",getMenProducts);
 router.get("/products/uni",getUniProducts);
 router.get("/product/:id", getProductById);
-router.post("/product", upLoader.single("imageurl"), createNewproduct);
-router.post("/fullproduct", upLoader.single("imageurl"), addNewFullProduct);
-router.post("/stock",upLoader.single("imageurl"), addStock);
-router.delete("/product/:id", deleteProductById);
+
+// private routes
+router.post("/product", checkAuth, upLoader.single("imageurl"), createNewproduct);
+router.post("/fullproduct", checkAuth, upLoader.single("imageurl"), addNewFullProduct);
+router.post("/stock", checkAuth, upLoader.single("imageurl"), addStock);
+router.delete("/product/:id",checkAuth, deleteProductById);
 
 export default router;
