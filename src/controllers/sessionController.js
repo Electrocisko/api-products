@@ -23,11 +23,10 @@ const registerUser = async (req, res) => {
 
 const userLogin = async (req, res) => {
   try {
-        // console.log(req.user);
       req.session.user = req.user;
       return res.json({
-        message: "Logueado",
-        
+        statusOk: true,
+        message: "User loged successfully",
       });
   } catch (error) {
     return res.json({
@@ -37,4 +36,18 @@ const userLogin = async (req, res) => {
   }
 };
 
-export { registerUser, userLogin };
+
+const userLogout = (req, res) => {
+  req.logout((err) => {
+      if (err) {
+          return res.status(500).json({ message: 'Error logging out' });
+      }
+      res.json({ 
+        statusOk: true,
+        message: "User logout successfully", 
+      });
+  });
+};
+
+
+export { registerUser, userLogin , userLogout};
