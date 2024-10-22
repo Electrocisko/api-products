@@ -1,5 +1,5 @@
 
-const validateForm = (req, res, next) => {
+const validateFormRegister = (req, res, next) => {
 
     const { name, lastname,email,  password, password2 } = req.body;
     if (!name) return res.status(400).json({message: "Name missing"})
@@ -12,4 +12,4 @@ const validateForm = (req, res, next) => {
 
 }
 
-export default validateForm
+export default validateFormRegister

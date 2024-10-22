@@ -6,7 +6,13 @@ const tableName = "users";
 const registerUser = async (req, res) => {
 
   try {
-    const user = req.user;
+  
+    const user = {
+      name: req.user.name,
+      lastname: req.user.lastname,
+      email: req.user.email,
+      phone: req.user.phone  
+    }
     res.status(201).json({
       statusOk: true,
       message: "User registred successfully",
@@ -52,16 +58,20 @@ const userLogout = (req, res) => {
 };
 
 
-// Tendria que usar un DTO
+
 const currentUser =  (req, res) => {
-
-
   try {
     if (!req.user)  throw new Error("There is no User logged in")
+      const user = {
+        name: req.user.name,
+        lastname: req.user.lastname,
+        email: req.user.email,
+        phone: req.user.phone 
+      }
     return res.json({
       statusOk: true,
       message: "Current User",
-      user: req.user
+      user
   
     });
   } catch (error) {
