@@ -16,20 +16,12 @@ const initializePassport = () => {
           usernameField: "email",
         },
         async (req, email, password, done) => {
-          const { name, lastname, password2, phone } = req.body;
-          if (!name) return done(null, false, { message: "Missing Name" });
-          if (!lastname)
-            return done(null, false, { message: "Missing Lastname" });
-          if (!password || !password2)
-            return done(null, false, { message: "Missing Password" });
-          if (password != password2)
-            return done(null, false, { message: "Paswords don't match" });
+          const { name, lastname, phone } = req.body;
           const exists = await pool.query(
             `SELECT * FROM users WHERE email = '${email}';`
           );
 
-          if (exists.rowCount != 0)
-            return done(null, false, { message: "User already exist" });
+          if (exists.rowCount != 0) return done(null, false);
           const hashedPassword = await createHash(password);
           const query = `INSERT INTO ${tableName} (name, lastname, email, password, phone)
             VALUES ('${name}', '${lastname}', '${email}', '${hashedPassword}','${phone}') RETURNING name, lastname, email;`;
@@ -38,7 +30,6 @@ const initializePassport = () => {
           const user = data.rows[0];
           if (data.rowCount == 0)
             return done(null, false, { message: "Error in register user" });
-
           return done(null, user);
         }
       )
@@ -57,14 +48,12 @@ const initializePassport = () => {
           const userDB = data.rows[0];
 
           if (!userDB)
-            return done(null, false, { message: "No existe usuario" });
+            return done(null, false);
           const valid = await isValidPassword(password, userDB.password);
           if (valid) {
             return done(null, userDB);
           }
-          return done(null, false, {
-            message: "error en validacion de usuario",
-          });
+          return done(null, false);
         }
       )
     );
@@ -76,7 +65,7 @@ const initializePassport = () => {
       return done(null, user);
     });
   } catch (error) {
-    console.log("passport error", error);
+    done(error);
   }
 };
 

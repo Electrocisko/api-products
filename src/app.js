@@ -25,17 +25,23 @@ app.use(express.static(__dirname + "/public"));
 app.use(cors());
 
 // sesions
-app.use(session({
-  secret: process.env.SECRET_SESSION,
-  cookie: {
-  httpOnly: false,
-  secure: false,
-  maxAge: 36000
-  },
-  rolling: true,
-  resave: true,
-  saveUninitialized: false
-  }));
+// app.use(session({
+//   secret: process.env.SECRET_SESSION,
+//   cookie: {
+//   httpOnly: false,
+//   secure: false,
+//   maxAge: 36000
+//   },
+//   rolling: true,
+//   resave: true,
+//   saveUninitialized: false
+//   }));
+
+  app.use(session({
+    secret: process.env.SECRET_SESSION,
+    resave: false ,
+    saveUninitialized: true ,
+  }))
 
 initPassportLocal();
 app.use(passport.initialize());
