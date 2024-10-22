@@ -29,9 +29,16 @@ const registerUser = async (req, res) => {
 
 const userLogin = async (req, res) => {
   try {
+    const user = {
+      name: req.user.name,
+      lastname: req.user.lastname,
+      email: req.user.email,
+      phone: req.user.phone  
+    }
       return res.json({
         statusOk: true,
         message: "User loged successfully",
+        user
       });
   } catch (error) {
     return res.json({
