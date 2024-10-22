@@ -17,11 +17,11 @@ const initializePassport = () => {
         },
         async (req, email, password, done) => {
           const { name, lastname, phone } = req.body;
-          const exists = await pool.query(
-            `SELECT * FROM users WHERE email = '${email}';`
-          );
+          // const exists = await pool.query(
+          //   `SELECT * FROM users WHERE email = '${email}';`
+          // );
 
-          if (exists.rowCount != 0) return done(null, false);
+          // if (exists.rowCount != 0) return done(null, false);
           const hashedPassword = await createHash(password);
           const query = `INSERT INTO ${tableName} (name, lastname, email, password, phone)
             VALUES ('${name}', '${lastname}', '${email}', '${hashedPassword}','${phone}') RETURNING name, lastname, email;`;

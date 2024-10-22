@@ -1,7 +1,7 @@
 import express from "express";
 import {registerUser, userLogin,userLogout, currentUser} from "../controllers/sessionController.js";
 import passport from "passport";
-import validateFormRegister from "../middlewares/validateForm.js";
+import validateFormRegister from "../middlewares/validateFormRegister.js";
 import validateLogin from "../middlewares/validateLogin.js";
 
 
