@@ -7,8 +7,10 @@ import userRouter from "./routes/usersRouter.js";
 import sessionRouter from "./routes/sessionsRouter.js";
 import initPassportLocal from "./helpers/passport.config.js";
 import passport from "passport";
-import session from 'express-session';
 
+import configurePassport from "./helpers/passport.js";
+//import session from 'express-session';
+import checkAuth from "./middlewares/checkAuth.js";
 
 
 import cors from "cors";
@@ -25,15 +27,16 @@ app.use(express.static(__dirname + "/public"));
 app.use(cors());
 
 
-  app.use(session({
-    secret: process.env.SECRET_SESSION,
-    resave: false ,
-    saveUninitialized: true ,
-  }))
+  // app.use(session({
+  //   secret: process.env.SECRET_SESSION,
+  //   resave: false ,
+  //   saveUninitialized: true ,
+  // }))
 
-initPassportLocal();
+
 app.use(passport.initialize());
-app.use(passport.session());
+configurePassport(passport);
+//app.use(passport.session());
 
 //routers
 app.use("/api", productRouter);
@@ -43,6 +46,15 @@ app.use("/api", sessionRouter);
 app.get("/", (req, res) => {
   res.status(200).send("<h1>Api Ecommerce</h1>");
 });
+
+
+app.get('/protegida',checkAuth, (req, res) => {
+  console.log(req.headers);
+  res.json({ message: 'Acceso permitido', user: req.user });
+});
+
+
+
 
 app.get("/error", (req,res) => {
   console.log( req.session.messages)
