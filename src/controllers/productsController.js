@@ -167,7 +167,6 @@ const createNewproduct = async (req, res) => {
       imageurl,
     } = req.body;
 
-    // Falta multer
     let image;
     !req.file ? (image = "generico.png") : (image = req.file.filename);
 

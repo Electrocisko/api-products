@@ -2,6 +2,7 @@ import { pool } from "../database/postgres.js";
 import { createHash, isValidPassword } from "../helpers/cryptPassword.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import userDTO from "../dtos/userDTO.js";
 
 const SECRET = process.env.SECRET_JWT;
 
@@ -13,12 +14,7 @@ const registerUser = async (req, res) => {
       "INSERT INTO users (name, lastname, email, password, phone) VALUES ($1, $2, $3, $4, $5) RETURNING *",
       [name, lastname, email, hashedPassword, phone]
     );
-    const user = {
-      name: newUser.rows[0].name,
-      lastname: newUser.rows[0].lastname,
-      email: newUser.rows[0].email,
-      phone: newUser.rows[0].phone,
-    };
+    const user = userDTO(newUser.rows[0])
     return res.status(201).json({
       statusOk: true,
       message: "User loged successfully",
@@ -57,16 +53,17 @@ const userLogin = async (req, res) => {
   }
 };
 
+
 const currentUser = (req, res) => {
   try {
- 
+    const user = req.user
     return res.json({
       statusOk: true,
       message: "Current User",
-  
+      user
     });
   } catch (error) {
-    return res.json({
+    return res.json({ 
       statusOk: false,
       message: error.message,
     });

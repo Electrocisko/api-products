@@ -266,6 +266,7 @@ CREATE TABLE users(
 	phone VARCHAR(15),
 	creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    is_delete BOOLEAN DEFAULT false,
     rol VARCHAR(20) DEFAULT 'user'
 );
 
