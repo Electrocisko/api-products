@@ -1,11 +1,9 @@
 import { pool } from "../database/postgres.js";
 import fs from "fs";
 
-const tableName = "products";
-
 const getAllProducts = async (req, res) => {
   try {
-    const data = await pool.query(`SELECT * FROM ${tableName}`);
+    const data = await pool.query(`SELECT * FROM products`);
     res.status(200).json({
       statusOk: true,
       data: data.rows,
@@ -117,29 +115,29 @@ const getUniProducts = async (req, res) => {
 const getProductById = async (req, res) => {
   try {
     const id = req.params.id;
-    const query = `SELECT * FROM ${tableName} WHERE product_id = ${id};`;
+    const query = "SELECT * FROM products WHERE product_id = $1";
 
-    const queryAllData = `SELECT 
-    c.color_name,
-	  c.rgb_code,
-    sz.size_name,
-    st.quantity,
-    st.imageurl
-FROM 
-    products p
-JOIN 
-    stock st ON p.product_id = st.product_id
-JOIN 
-    colors c ON st.color_id = c.color_id
-JOIN 
-    sizes sz ON st.size_id = sz.size_id
-WHERE 
-    p.product_id = ${id} 
-    AND st.quantity > 0;`;
+    const queryAllData = `
+    SELECT 
+        c.color_name,
+        c.rgb_code,
+        sz.size_name,
+        st.quantity,
+        st.imageurl
+    FROM 
+        products p
+    JOIN 
+        stock st ON p.product_id = st.product_id
+    JOIN 
+        colors c ON st.color_id = c.color_id
+    JOIN 
+        sizes sz ON st.size_id = sz.size_id
+    WHERE 
+        p.product_id = $1 
+        AND st.quantity > 0;`;
 
-    const stockAviable = await pool.query(queryAllData);
-
-    const data = await pool.query(query);
+    const data = await pool.query(query, [id]);
+    const stockAviable = await pool.query(queryAllData, [id]);
     if (data.rowCount == 0) throw new Error("Product not found in database");
     res.status(200).json({
       statusOk: true,
@@ -170,10 +168,22 @@ const createNewproduct = async (req, res) => {
     let image;
     !req.file ? (image = "generico.png") : (image = req.file.filename);
 
-    const query = `  INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
-  VALUES ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}','${image}') RETURNING product_id;`;
+    //   const query = `  INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
+    // VALUES ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}','${image}') RETURNING product_id;`;
 
-    const id = await pool.query(query);
+    const query = `  INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
+  VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING product_id;`;
+
+    const id = await pool.query(query, [
+      name,
+      price,
+      description,
+      discount,
+      style,
+      branch,
+      gender,
+      image,
+    ]);
 
     res.status(200).json({
       statusOk: true,
@@ -274,7 +284,6 @@ const addNewFullProduct = async (req, res) => {
       size3XL,
     } = req.body;
 
-
     // Valores predeterminados usando operadores lógicos
     let querySize_XS = sizeXS || 0;
     let querySize_S = sizeS || 0;
@@ -318,8 +327,6 @@ const addNewFullProduct = async (req, res) => {
                           INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
                         VALUES (new_product_id, ${color_id}, 7, ${querySize_3XL},'${image}');
                     END $$;`;
-
-            
 
     const response = await pool.query(query);
 
@@ -382,5 +389,5 @@ export {
   getOnsaleProducts,
   getMenProducts,
   getWomenProducts,
-  getUniProducts
+  getUniProducts,
 };

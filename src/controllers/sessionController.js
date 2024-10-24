@@ -71,3 +71,5 @@ const currentUser = (req, res) => {
 };
 
 export { registerUser, userLogin,  currentUser };
+
+// FALTA MODIFICAR DATOS DE USER Y UPDATE FECHA
