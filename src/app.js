@@ -5,18 +5,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 import productRouter from "./routes/productsRouter.js";
 import userRouter from "./routes/usersRouter.js";
 import sessionRouter from "./routes/sessionsRouter.js";
-import initPassportLocal from "./helpers/passport.config.js";
 import passport from "passport";
-
 import configurePassport from "./helpers/passport.js";
-//import session from 'express-session';
 import checkAuth from "./middlewares/checkAuth.js";
-
-
 import cors from "cors";
 // Para cargar los datos
 import { loadData } from "./database/helper/loadData.js";
-// import {createTable} from "./database/helper/createTable.js";
 
 const PORT = process.env.PORT || 3030;
 const app = express();
@@ -26,17 +20,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
 app.use(cors());
 
-
-  // app.use(session({
-  //   secret: process.env.SECRET_SESSION,
-  //   resave: false ,
-  //   saveUninitialized: true ,
-  // }))
-
-
+//Pasport
 app.use(passport.initialize());
 configurePassport(passport);
-//app.use(passport.session());
 
 //routers
 app.use("/api", productRouter);
@@ -49,11 +35,8 @@ app.get("/", (req, res) => {
 
 
 app.get('/protegida',checkAuth, (req, res) => {
-  console.log(req.headers);
   res.json({ message: 'Acceso permitido', user: req.user });
 });
-
-
 
 
 app.get("/error", (req,res) => {
