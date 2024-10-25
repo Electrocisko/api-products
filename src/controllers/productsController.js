@@ -18,7 +18,7 @@ const getAllProducts = async (req, res) => {
 
 const getNewProducts = async (req, res) => {
   try {
-    const queryString = `SELECT * FROM ${tableName} ORDER BY created_at DESC LIMIT 4;`;
+    const queryString = `SELECT * FROM products ORDER BY created_at DESC LIMIT 4;`;
     const data = await pool.query(queryString);
     res.status(200).json({
       statusOk: true,
@@ -34,7 +34,7 @@ const getNewProducts = async (req, res) => {
 
 const getTopProducts = async (req, res) => {
   try {
-    const queryString = `SELECT * FROM ${tableName} ORDER BY quantity_sold DESC ;`;
+    const queryString = `SELECT * FROM products ORDER BY quantity_sold DESC ;`;
     const data = await pool.query(queryString);
     res.status(200).json({
       statusOk: true,
@@ -50,7 +50,7 @@ const getTopProducts = async (req, res) => {
 
 const getOnsaleProducts = async (req, res) => {
   try {
-    const queryString = `SELECT * FROM ${tableName} WHERE discount > 0;`;
+    const queryString = `SELECT * FROM products WHERE discount > 0;`;
     const data = await pool.query(queryString);
     res.status(200).json({
       statusOk: true,
@@ -66,7 +66,7 @@ const getOnsaleProducts = async (req, res) => {
 
 const getWomenProducts = async (req, res) => {
   try {
-    const queryString = `SELECT * FROM ${tableName} WHERE gender = 'women' OR gender = 'uni';`;
+    const queryString = `SELECT * FROM products WHERE gender = 'women' OR gender = 'uni';`;
     const data = await pool.query(queryString);
     res.status(200).json({
       statusOk: true,
@@ -82,7 +82,7 @@ const getWomenProducts = async (req, res) => {
 
 const getMenProducts = async (req, res) => {
   try {
-    const queryString = `SELECT * FROM ${tableName} WHERE gender = 'men' OR gender = 'uni';`;
+    const queryString = `SELECT * FROM products WHERE gender = 'men' OR gender = 'uni';`;
     const data = await pool.query(queryString);
     res.status(200).json({
       statusOk: true,
@@ -98,7 +98,7 @@ const getMenProducts = async (req, res) => {
 
 const getUniProducts = async (req, res) => {
   try {
-    const queryString = `SELECT * FROM ${tableName} WHERE gender = 'uni';`;
+    const queryString = `SELECT * FROM products WHERE gender = 'uni';`;
     const data = await pool.query(queryString);
     res.status(200).json({
       statusOk: true,
@@ -115,7 +115,7 @@ const getUniProducts = async (req, res) => {
 const getProductById = async (req, res) => {
   try {
     const id = req.params.id;
-    const query = "SELECT * FROM products WHERE product_id = $1";
+    const query = `SELECT * FROM products WHERE product_id = $1`;
 
     const queryAllData = `
     SELECT 
@@ -136,8 +136,11 @@ const getProductById = async (req, res) => {
         p.product_id = $1 
         AND st.quantity > 0;`;
 
-    const data = await pool.query(query, [id]);
-    const stockAviable = await pool.query(queryAllData, [id]);
+    const data = await pool.query(query,[id]);
+    const stockAviable = await pool.query(queryAllData,[id]);
+
+
+
     if (data.rowCount == 0) throw new Error("Product not found in database");
     res.status(200).json({
       statusOk: true,
@@ -245,8 +248,8 @@ const addStock = async (req, res) => {
       throw new Error("Incomplete data in the form.");
     // Falta validaciones
 
-    await pool.query(`INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl) 
-VALUES (${product_id}, ${color_id}, ${size_id}, ${quantity}, '${image}'); `);
+await pool.query(`INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl) 
+  VALUES ($1, $2, $3, $4, $5);`,[product_id, color_id, size_id,quantity, image ]);
 
     res.status(200).json({
       statusOk: true,
@@ -271,10 +274,7 @@ const addNewFullProduct = async (req, res) => {
       style,
       branch,
       gender,
-      imageurl,
       color_id,
-      size_id,
-      quantity,
       sizeXS,
       sizeS,
       sizeM,
@@ -368,12 +368,9 @@ const addNewFullProduct = async (req, res) => {
 const deleteProductById = async (req, res) => {
   try {
     const { id } = req.params;
-
-    
-
-    await pool.query(`DELETE FROM stock WHERE product_id = ${id};`);
+    await pool.query(`DELETE FROM stock WHERE product_id = $1;`,[id]);
     const productDeleteResponse = await pool.query(
-      `DELETE FROM products WHERE product_id = ${id} RETURNING *;`
+      `DELETE FROM products WHERE product_id = $1 RETURNING *;`,[id]
     );
     if (productDeleteResponse.rowCount == 0) {
       throw new Error("The product ID does not exist");

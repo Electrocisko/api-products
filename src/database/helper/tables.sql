@@ -30,17 +30,17 @@ CREATE TABLE colors (
 -- rgb_code CHAR(7) NOT NULL: Código RGB del color en formato hexadecimal (por ejemplo, #FF5733). El tipo CHAR(7) es adecuado para almacenar códigos RGB en formato hexadecimal que incluyen el símbolo # seguido de seis caracteres hexadecimales.
 
 --Table de stock
-CREATE TABLE stock (
-    id SERIAL PRIMARY KEY,
-    product_id INT NOT NULL,
-    color_id INT NOT NULL,
-    size_id INT NOT NULL,
-    quantity INT NOT NULL DEFAULT 0, 
-    FOREIGN KEY (product_id) REFERENCES products(product_id),
-    FOREIGN KEY (color_id) REFERENCES colors(color_id),
-    FOREIGN KEY (size_id) REFERENCES sizes(size_id),
-    UNIQUE (product_id, color_id, size_id)
-);
+-- CREATE TABLE stock (
+--     id SERIAL PRIMARY KEY,
+--     product_id INT NOT NULL,
+--     color_id INT NOT NULL,
+--     size_id INT NOT NULL,
+--     quantity INT NOT NULL DEFAULT 0, 
+--     FOREIGN KEY (product_id) REFERENCES products(product_id),
+--     FOREIGN KEY (color_id) REFERENCES colors(color_id),
+--     FOREIGN KEY (size_id) REFERENCES sizes(size_id),
+--     UNIQUE (product_id, color_id, size_id)
+-- );
 
 -- Tabla de stock, con la imagen asociado a cada color.
 
