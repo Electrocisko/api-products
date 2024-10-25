@@ -307,25 +307,14 @@ const addNewFullProduct = async (req, res) => {
                         RETURNING product_id INTO new_product_id;
 
                         INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
-                        VALUES (new_product_id, ${color_id}, 1, ${querySize_XS},'${image}');
-                        
-                          INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
-                        VALUES (new_product_id, ${color_id}, 2, ${querySize_S},'${image}');
-
-                          INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
-                        VALUES (new_product_id, ${color_id}, 3, ${querySize_M},'${image}');
-
-                          INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
-                        VALUES (new_product_id, ${color_id}, 4, ${querySize_L},'${image}');
-
-                          INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
-                        VALUES (new_product_id, ${color_id}, 5, ${querySize_XL},'${image}');
-
-                          INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
-                        VALUES (new_product_id, ${color_id}, 6, ${querySize_XXL},'${image}');
-
-                          INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
-                        VALUES (new_product_id, ${color_id}, 7, ${querySize_3XL},'${image}');
+                        VALUES
+                          (new_product_id, ${color_id}, 1, ${querySize_XS},'${image}'),
+                          (new_product_id, ${color_id}, 2, ${querySize_S},'${image}'),
+                          (new_product_id, ${color_id}, 3, ${querySize_M},'${image}'),
+                          (new_product_id, ${color_id}, 4, ${querySize_L},'${image}'),
+                          (new_product_id, ${color_id}, 5, ${querySize_XL},'${image}'),
+                          (new_product_id, ${color_id}, 6, ${querySize_XXL},'${image}'),
+                          (new_product_id, ${color_id}, 7, ${querySize_3XL},'${image}');
                     END $$;`;
 
     const response = await pool.query(query);
