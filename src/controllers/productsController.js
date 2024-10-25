@@ -297,31 +297,64 @@ const addNewFullProduct = async (req, res) => {
     let image;
     !req.file ? (image = "generico.png") : (image = req.file.filename);
 
-    // FALTA VER EL TEMA DE LOS ID DE STOCKS
-    const query = `DO $$
-                    DECLARE
-                        new_product_id INT;
-                    BEGIN
-                        INSERT INTO products (name, price, description, discount, style, branch, gender, imageurl)
-                        VALUES  ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}','${image}')
-                        RETURNING product_id INTO new_product_id;
 
-                        INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl)
-                        VALUES
-                          (new_product_id, ${color_id}, 1, ${querySize_XS},'${image}'),
-                          (new_product_id, ${color_id}, 2, ${querySize_S},'${image}'),
-                          (new_product_id, ${color_id}, 3, ${querySize_M},'${image}'),
-                          (new_product_id, ${color_id}, 4, ${querySize_L},'${image}'),
-                          (new_product_id, ${color_id}, 5, ${querySize_XL},'${image}'),
-                          (new_product_id, ${color_id}, 6, ${querySize_XXL},'${image}'),
-                          (new_product_id, ${color_id}, 7, ${querySize_3XL},'${image}');
-                    END $$;`;
+    const query1 =
+      "INSERT INTO products (name, price, description, discount, style, branch, gender, imageurl) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)RETURNING product_id;";
 
-    const response = await pool.query(query);
+    let response = await pool.query(query1, [
+      name,
+      price,
+      description,
+      discount,
+      style,
+      branch,
+      gender,
+      image,
+    ]);
+
+// Obtengo los ids de la tabla sizes
+    const sizes = await pool.query("SELECT size_id FROM sizes ORDER BY size_id;");
+    const listSizeIds = sizes.rows.map((item) => {
+      return item.size_id
+    })
+
+    const new_product_id = parseInt(response.rows[0].product_id); // lo parseo a integer
+
+    const query2 =
+      "INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl) VALUES " +
+        " ($1, $2, $11, $3, $4)," +
+        " ($1, $2, $12, $5, $4)," +
+        " ($1, $2, $13, $6, $4)," +
+        " ($1, $2, $14, $7, $4)," +
+        " ($1, $2, $15, $8, $4)," +
+        " ($1, $2, $16, $9, $4)," +
+        " ($1, $2, $17, $10, $4);"
+
+
+    response = await pool.query(query2, [
+      new_product_id,
+      color_id,
+      querySize_XS,
+      image,
+      querySize_S,
+      querySize_M,
+      querySize_L,
+      querySize_XL,
+      querySize_XXL,
+      querySize_3XL,
+      listSizeIds[0],
+      listSizeIds[1],
+      listSizeIds[2],
+      listSizeIds[3],
+      listSizeIds[4],
+      listSizeIds[5],
+      listSizeIds[6],
+    ]);
 
     res.status(200).json({
       statusOk: true,
       message: "Successfully added",
+      new_product_id,
     });
   } catch (error) {
     res.status(500).json({
@@ -336,7 +369,7 @@ const deleteProductById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    console.log(id);
+    
 
     await pool.query(`DELETE FROM stock WHERE product_id = ${id};`);
     const productDeleteResponse = await pool.query(
