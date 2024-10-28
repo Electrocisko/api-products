@@ -13,5 +13,9 @@ const checkAuth = (req, res, next) => {
     })(req, res, next);
 };
 
+// const checkAuth = (req, res, next) => {
+//         next(); 
+// };
+
 export default checkAuth;
 
