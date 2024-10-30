@@ -18,7 +18,12 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
-app.use(cors());
+//app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // Permitir solo tu frontend
+  methods: 'GET,POST,DELETE', // Métodos permitidos
+  allowedHeaders: ['Authorization', 'Content-Type'] // Encabezados permitidos
+}));
 
 //Pasport
 app.use(passport.initialize());

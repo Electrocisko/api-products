@@ -13,7 +13,8 @@ import {
   getOnsaleProducts,
   getMenProducts,
   getUniProducts,
-  getWomenProducts
+  getWomenProducts,
+  addNewColorToProduct
 
 } from "../controllers/productsController.js";
 import upLoader from "../middlewares/uploadImage.js";
@@ -36,6 +37,7 @@ router.get("/product/:id", getProductById);
 router.post("/product", checkAuth, upLoader.single("imageurl"), createNewproduct);
 router.post("/fullproduct", checkAuth, upLoader.single("imageurl"), addNewFullProduct);
 router.post("/stock", checkAuth, upLoader.single("imageurl"), addStock);
+router.post("/addcolor",checkAuth,  upLoader.single("imageurl"), addNewColorToProduct);
 router.delete("/product/:id",checkAuth, deleteProductById);
 
 export default router;

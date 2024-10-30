@@ -136,10 +136,8 @@ const getProductById = async (req, res) => {
         p.product_id = $1 
         AND st.quantity > 0;`;
 
-    const data = await pool.query(query,[id]);
-    const stockAviable = await pool.query(queryAllData,[id]);
-
-
+    const data = await pool.query(query, [id]);
+    const stockAviable = await pool.query(queryAllData, [id]);
 
     if (data.rowCount == 0) throw new Error("Product not found in database");
     res.status(200).json({
@@ -157,22 +155,11 @@ const getProductById = async (req, res) => {
 
 const createNewproduct = async (req, res) => {
   try {
-    const {
-      name,
-      price,
-      description,
-      discount,
-      style,
-      branch,
-      gender,
-      imageurl,
-    } = req.body;
+    const { name, price, description, discount, style, branch, gender } =
+      req.body;
 
     let image;
     !req.file ? (image = "generico.png") : (image = req.file.filename);
-
-    //   const query = `  INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
-    // VALUES ('${name}',${price},'${description}',${discount},'${style}','${branch}','${gender}','${image}') RETURNING product_id;`;
 
     const query = `  INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
   VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING product_id;`;
@@ -238,7 +225,7 @@ const getAllSizes = async (req, res) => {
 //Controlador que carga stocks
 const addStock = async (req, res) => {
   try {
-    const { product_id, color_id, size_id, quantity, imageurl } = req.body;
+    const { product_id, color_id, size_id, quantity } = req.body;
 
     //  multer
     let image;
@@ -248,8 +235,11 @@ const addStock = async (req, res) => {
       throw new Error("Incomplete data in the form.");
     // Falta validaciones
 
-await pool.query(`INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl) 
-  VALUES ($1, $2, $3, $4, $5);`,[product_id, color_id, size_id,quantity, image ]);
+    await pool.query(
+      `INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl) 
+  VALUES ($1, $2, $3, $4, $5);`,
+      [product_id, color_id, size_id, quantity, image]
+    );
 
     res.status(200).json({
       statusOk: true,
@@ -297,7 +287,6 @@ const addNewFullProduct = async (req, res) => {
     let image;
     !req.file ? (image = "generico.png") : (image = req.file.filename);
 
-
     const query1 =
       "INSERT INTO products (name, price, description, discount, style, branch, gender, imageurl) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)RETURNING product_id;";
 
@@ -312,24 +301,25 @@ const addNewFullProduct = async (req, res) => {
       image,
     ]);
 
-// Obtengo los ids de la tabla sizes
-    const sizes = await pool.query("SELECT size_id FROM sizes ORDER BY size_id;");
+    // Obtengo los ids de la tabla sizes
+    const sizes = await pool.query(
+      "SELECT size_id FROM sizes ORDER BY size_id;"
+    );
     const listSizeIds = sizes.rows.map((item) => {
-      return item.size_id
-    })
+      return item.size_id;
+    });
 
     const new_product_id = parseInt(response.rows[0].product_id); // lo parseo a integer
 
     const query2 =
       "INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl) VALUES " +
-        " ($1, $2, $11, $3, $4)," +
-        " ($1, $2, $12, $5, $4)," +
-        " ($1, $2, $13, $6, $4)," +
-        " ($1, $2, $14, $7, $4)," +
-        " ($1, $2, $15, $8, $4)," +
-        " ($1, $2, $16, $9, $4)," +
-        " ($1, $2, $17, $10, $4);"
-
+      " ($1, $2, $11, $3, $4)," +
+      " ($1, $2, $12, $5, $4)," +
+      " ($1, $2, $13, $6, $4)," +
+      " ($1, $2, $14, $7, $4)," +
+      " ($1, $2, $15, $8, $4)," +
+      " ($1, $2, $16, $9, $4)," +
+      " ($1, $2, $17, $10, $4);";
 
     response = await pool.query(query2, [
       new_product_id,
@@ -368,9 +358,10 @@ const addNewFullProduct = async (req, res) => {
 const deleteProductById = async (req, res) => {
   try {
     const { id } = req.params;
-    await pool.query(`DELETE FROM stock WHERE product_id = $1;`,[id]);
+    await pool.query(`DELETE FROM stock WHERE product_id = $1;`, [id]);
     const productDeleteResponse = await pool.query(
-      `DELETE FROM products WHERE product_id = $1 RETURNING *;`,[id]
+      `DELETE FROM products WHERE product_id = $1 RETURNING *;`,
+      [id]
     );
     if (productDeleteResponse.rowCount == 0) {
       throw new Error("The product ID does not exist");
@@ -385,6 +376,85 @@ const deleteProductById = async (req, res) => {
       statusOk: true,
       message: "Here delete product",
       id,
+    });
+  } catch (error) {
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+};
+
+//Controlador que carga producto nuevo con su stock.
+const addNewColorToProduct = async (req, res) => {
+  try {
+    const {
+      product_id,
+      color_id,
+      sizeXS,
+      sizeS,
+      sizeM,
+      sizeL,
+      sizeXL,
+      sizeXXL,
+      size3XL,
+    } = req.body;
+
+    // Valores predeterminados usando operadores lógicos
+    let querySize_XS = sizeXS || 0;
+    let querySize_S = sizeS || 0;
+    let querySize_M = sizeM || 0;
+    let querySize_L = sizeL || 0;
+    let querySize_XL = sizeXL || 0;
+    let querySize_XXL = sizeXXL || 0;
+    let querySize_3XL = size3XL || 0;
+
+    //multer
+    let image;
+    !req.file ? (image = "generico.png") : (image = req.file.filename);
+
+    // Obtengo los ids de la tabla sizes
+    const sizes = await pool.query(
+      "SELECT size_id FROM sizes ORDER BY size_id;"
+    );
+    const listSizeIds = sizes.rows.map((item) => {
+      return item.size_id;
+    });
+
+    //const new_product_id = parseInt(response.rows[0].product_id); // lo parseo a integer
+
+    const query2 =
+      "INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl) VALUES " +
+      " ($1, $2, $11, $3, $4)," +
+      " ($1, $2, $12, $5, $4)," +
+      " ($1, $2, $13, $6, $4)," +
+      " ($1, $2, $14, $7, $4)," +
+      " ($1, $2, $15, $8, $4)," +
+      " ($1, $2, $16, $9, $4)," +
+      " ($1, $2, $17, $10, $4);";
+
+    const response = await pool.query(query2, [
+      product_id,
+      color_id,
+      querySize_XS,
+      image,
+      querySize_S,
+      querySize_M,
+      querySize_L,
+      querySize_XL,
+      querySize_XXL,
+      querySize_3XL,
+      listSizeIds[0],
+      listSizeIds[1],
+      listSizeIds[2],
+      listSizeIds[3],
+      listSizeIds[4],
+      listSizeIds[5],
+      listSizeIds[6],
+    ]);
+    res.status(200).json({
+      statusOk: true,
+      message: "Successfully color added ",
     });
   } catch (error) {
     res.status(500).json({
@@ -409,4 +479,5 @@ export {
   getMenProducts,
   getWomenProducts,
   getUniProducts,
+  addNewColorToProduct,
 };

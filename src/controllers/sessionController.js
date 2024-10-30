@@ -14,12 +14,12 @@ const registerUser = async (req, res) => {
       "INSERT INTO users (name, lastname, email, password, phone) VALUES ($1, $2, $3, $4, $5) RETURNING *",
       [name, lastname, email, hashedPassword, phone]
     );
-    const user = userDTO(newUser.rows[0])
+    const user = userDTO(newUser.rows[0]);
     return res.status(201).json({
       statusOk: true,
       message: "User loged successfully",
       user,
-    })
+    });
   } catch (error) {
     res.status(400).json({
       error: "Error creando usuario",
@@ -29,22 +29,28 @@ const registerUser = async (req, res) => {
 };
 
 const userLogin = async (req, res) => {
-  try { 
-      const { email, password } = req.body;
-      const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-      if (user.rows.length > 0 && await bcrypt.compare(password, user.rows[0].password)) {
-          const token = jwt.sign({ user_id: user.rows[0].user_id }, SECRET, { expiresIn: '1h' });
-          res.status(200).json({
-            statusOk: true,
-            message: "User loged successfully",
-            token,
-          });
-      } else {
-        return res.status(401).json({
-          statusOk: false,
-          message: "Non-existent user or invalid password",
-        });
-      }
+  try {
+    const { email, password } = req.body;
+    const user = await pool.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
+    if (
+      user.rows.length > 0 &&
+      (await bcrypt.compare(password, user.rows[0].password))
+    ) {
+      const user_data = userDTO(user.rows[0]);
+      const token = jwt.sign({ user_data }, SECRET, { expiresIn: "1h" });
+      res.status(200).json({
+        statusOk: true,
+        message: "User loged successfully",
+        token,
+      });
+    } else {
+      return res.status(401).json({
+        statusOk: false,
+        message: "Non-existent user or invalid password",
+      });
+    }
   } catch (error) {
     return res.status(500).json({
       statusOk: false,
@@ -53,23 +59,22 @@ const userLogin = async (req, res) => {
   }
 };
 
-
 const currentUser = (req, res) => {
   try {
-    const user = req.user
+    const user = req.user;
     return res.json({
       statusOk: true,
       message: "Current User",
-      user
+      user,
     });
   } catch (error) {
-    return res.json({ 
+    return res.json({
       statusOk: false,
       message: error.message,
     });
   }
 };
 
-export { registerUser, userLogin,  currentUser };
+export { registerUser, userLogin, currentUser };
 
 // FALTA MODIFICAR DATOS DE USER Y UPDATE FECHA

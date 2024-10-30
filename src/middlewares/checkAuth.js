@@ -3,6 +3,9 @@ import passport from "passport"
 const checkAuth = (req, res, next) => {
     passport.authenticate('jwt', { session: false }, (err, user, info) => {
         if (err) {
+
+            console.log(err);///////////////////////////////////////////////////////
+
             return res.sendStatus(403); 
         }
         if (!user) {
