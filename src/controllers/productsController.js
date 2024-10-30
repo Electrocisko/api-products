@@ -452,6 +452,7 @@ const addNewColorToProduct = async (req, res) => {
       listSizeIds[5],
       listSizeIds[6],
     ]);
+
     res.status(200).json({
       statusOk: true,
       message: "Successfully color added ",
