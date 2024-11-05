@@ -121,7 +121,9 @@ const getProductById = async (req, res) => {
     SELECT 
         c.color_name,
         c.rgb_code,
+        c.color_id,
         sz.size_name,
+        sz.size_id,
         st.quantity,
         st.imageurl
     FROM 
@@ -385,7 +387,7 @@ const deleteProductById = async (req, res) => {
   }
 };
 
-//Controlador que carga producto nuevo con su stock.
+//Controlador que agrega un opcion de color con su stock y tallas a un producto determinado por su id.
 const addNewColorToProduct = async (req, res) => {
   try {
     const {
@@ -465,6 +467,51 @@ const addNewColorToProduct = async (req, res) => {
   }
 };
 
+
+// Controlador que modifica el stock por  producto id (Ideal para actualizar su stock)
+const modifiedStockById = async (req,res) => {
+  try {
+    const {quantity,product_id, color_id, size_id } = req.body;
+
+ // Iniciar una transacción
+ await pool.query('BEGIN');
+ //Verificar el stock disponible
+ const response = await pool.query(
+     'SELECT quantity FROM stock WHERE product_id = $1 AND color_id = $2 AND size_id = $3',
+     [product_id, color_id, size_id]
+ );
+ const availableStock = response.rows[0]?.quantity;
+
+ if (availableStock === undefined) {
+     throw new Error('Product not available in this color and size combination');
+ }
+ if (availableStock < quantity) {
+     throw new Error('There is not enough stock for this product');
+ }
+ //Actualizar el stock
+ await pool.query(
+     'UPDATE stock SET quantity = quantity - $1 WHERE product_id = $2 AND color_id = $3 AND size_id = $4',
+     [quantity, product_id, color_id, size_id]
+ );
+ // Confirmar la transacción
+ await pool.query('COMMIT');
+
+    res.status(200).json({
+      statusOk: true,
+      message: "Purchase processed correctly "
+    });
+  } catch (error) {
+    await pool.query('ROLLBACK');
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+}
+
+
+
+
 export {
   getAllProducts,
   getNewProducts,
@@ -481,4 +528,5 @@ export {
   getWomenProducts,
   getUniProducts,
   addNewColorToProduct,
+  modifiedStockById
 };
