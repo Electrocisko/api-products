@@ -509,15 +509,18 @@ const modifiedStockById = async (req,res) => {
   }
 }
 
-const getByCategoryProducts = (req,res) => {
-  const { category } = req.query;
-  
-  
+const getByStyleProducts = async (req,res) => {
+  const { style } = req.query;
+
+  const response = await pool.query('SELECT * FROM products WHERE style ILIKE $1', [style]);
+
+
 
 res.status(200).json({
   statusOk: true,
-  message: "Products By category soon",
-  category
+  message: "Products By style soon",
+  response, 
+
 })
 }
 
@@ -542,5 +545,5 @@ export {
   getUniProducts,
   addNewColorToProduct,
   modifiedStockById,
-  getByCategoryProducts
+  getByStyleProducts
 };
