@@ -509,6 +509,19 @@ const modifiedStockById = async (req,res) => {
   }
 }
 
+const getByCategoryProducts = (req,res) => {
+  const { category } = req.query;
+  
+  
+
+res.status(200).json({
+  statusOk: true,
+  message: "Products By category soon",
+  category
+})
+}
+
+
 
 
 
@@ -528,5 +541,6 @@ export {
   getWomenProducts,
   getUniProducts,
   addNewColorToProduct,
-  modifiedStockById
+  modifiedStockById,
+  getByCategoryProducts
 };
