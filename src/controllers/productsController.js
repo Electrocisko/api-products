@@ -467,66 +467,70 @@ const addNewColorToProduct = async (req, res) => {
   }
 };
 
-
 // Controlador que modifica el stock por  producto id (Ideal para actualizar su stock)
-const modifiedStockById = async (req,res) => {
+const modifiedStockById = async (req, res) => {
   try {
-    const {quantity,product_id, color_id, size_id } = req.body;
+    const { quantity, product_id, color_id, size_id } = req.body;
 
- // Iniciar una transacción
- await pool.query('BEGIN');
- //Verificar el stock disponible
- const response = await pool.query(
-     'SELECT quantity FROM stock WHERE product_id = $1 AND color_id = $2 AND size_id = $3',
-     [product_id, color_id, size_id]
- );
- const availableStock = response.rows[0]?.quantity;
+    // Iniciar una transacción
+    await pool.query("BEGIN");
+    //Verificar el stock disponible
+    const response = await pool.query(
+      "SELECT quantity FROM stock WHERE product_id = $1 AND color_id = $2 AND size_id = $3",
+      [product_id, color_id, size_id]
+    );
+    const availableStock = response.rows[0]?.quantity;
 
- if (availableStock === undefined) {
-     throw new Error('Product not available in this color and size combination');
- }
- if (availableStock < quantity) {
-     throw new Error('There is not enough stock for this product');
- }
- //Actualizar el stock
- await pool.query(
-     'UPDATE stock SET quantity = quantity - $1 WHERE product_id = $2 AND color_id = $3 AND size_id = $4',
-     [quantity, product_id, color_id, size_id]
- );
- // Confirmar la transacción
- await pool.query('COMMIT');
+    if (availableStock === undefined) {
+      throw new Error(
+        "Product not available in this color and size combination"
+      );
+    }
+    if (availableStock < quantity) {
+      throw new Error("There is not enough stock for this product");
+    }
+    //Actualizar el stock
+    await pool.query(
+      "UPDATE stock SET quantity = quantity - $1 WHERE product_id = $2 AND color_id = $3 AND size_id = $4",
+      [quantity, product_id, color_id, size_id]
+    );
+    // Confirmar la transacción
+    await pool.query("COMMIT");
 
     res.status(200).json({
       statusOk: true,
-      message: "Purchase processed correctly "
+      message: "Purchase processed correctly ",
     });
   } catch (error) {
-    await pool.query('ROLLBACK');
+    await pool.query("ROLLBACK");
     res.status(500).json({
       statusOk: false,
       message: error.message,
     });
   }
-}
+};
 
-const getByStyleProducts = async (req,res) => {
-  const { style } = req.query;
-
-  const response = await pool.query('SELECT * FROM products WHERE style ILIKE $1', [style]);
-
-
-
-res.status(200).json({
-  statusOk: true,
-  message: "Products By style soon",
-  response, 
-
-})
-}
-
-
-
-
+const getFilteredProducts = async (req, res) => {
+  try {
+    const { key, value } = req.query;
+    const allowedKeys = ["style", "gender", "branch"];
+    if (!allowedKeys.includes(key)) {
+      throw new Error("Invalid search key");
+    }
+    const query = `SELECT * FROM products WHERE ${key} ILIKE $1`;
+    const response = await pool.query(query, [`%${value}`]);
+    if (response.rowCount == 0) throw new Error("No data found");
+    res.status(200).json({
+      statusOk: true,
+      data: response.rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+};
 
 export {
   getAllProducts,
@@ -545,5 +549,5 @@ export {
   getUniProducts,
   addNewColorToProduct,
   modifiedStockById,
-  getByStyleProducts
+  getFilteredProducts,
 };

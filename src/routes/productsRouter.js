@@ -16,7 +16,7 @@ import {
   getWomenProducts,
   addNewColorToProduct,
   modifiedStockById,
-  getByStyleProducts
+  getFilteredProducts
 
 } from "../controllers/productsController.js";
 import upLoader from "../middlewares/uploadImage.js";
@@ -32,7 +32,7 @@ router.get("/products/top", getTopProducts);
 router.get("/products/onsale",getOnsaleProducts);
 router.get("/products/women",getWomenProducts);
 router.get("/products/men",getMenProducts);
-router.get("/products/style",getByStyleProducts);
+router.get("/products/filter",getFilteredProducts);
 router.get("/products/uni",getUniProducts);
 router.get("/product/:id", getProductById);
 
