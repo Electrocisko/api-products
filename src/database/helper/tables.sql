@@ -25,8 +25,16 @@ CREATE TABLE sizes (
 CREATE TABLE colors (
     color_id SERIAL PRIMARY KEY,
     color_name VARCHAR(50) NOT NULL,
+    hsl_code CHAR(20) NOT NULL
+);
+
+CREATE TABLE colors (
+    color_id SERIAL PRIMARY KEY,
+    color_name VARCHAR(50) NOT NULL,
     rgb_code CHAR(7) NOT NULL
 );
+
+
 -- rgb_code CHAR(7) NOT NULL: Código RGB del color en formato hexadecimal (por ejemplo, #FF5733). El tipo CHAR(7) es adecuado para almacenar códigos RGB en formato hexadecimal que incluyen el símbolo # seguido de seis caracteres hexadecimales.
 
 -- Tabla de stock, con la imagen asociado a cada color.
@@ -43,6 +51,22 @@ CREATE TABLE stock (
     FOREIGN KEY (size_id) REFERENCES sizes(size_id),
     UNIQUE (product_id, color_id, size_id)
 );
+
+
+-- // CON DELETE CASCADE //
+CREATE TABLE stock (
+    id SERIAL PRIMARY KEY,
+    product_id INT NOT NULL,
+    color_id INT NOT NULL,
+    size_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 0,
+    imageurl VARCHAR(255), -- Nueva columna para la imagen específica
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE,
+    FOREIGN KEY (color_id) REFERENCES colors(color_id) ON DELETE CASCADE,
+    FOREIGN KEY (size_id) REFERENCES sizes(size_id) ON DELETE CASCADE,
+    UNIQUE (product_id, color_id, size_id)
+);
+
 
 
 
@@ -278,3 +302,36 @@ INSERT INTO users (name, lastname, email, password, phone)
 VALUES ('Olivia', 'Rodrigo', 'oliviarodri@gmail.com', '1234','11-4598-7812'),
 ('Charlotte', 'Witte', 'charlotte_witte@gmail.com', '1234','11-5879-9745');
 
+
+
+INSERT INTO colors (color_name, hsl_code) 
+VALUES
+('Negro', 'hsl(0, 0%, 0%)'),
+('Blanco', 'hsl(0, 0%, 100%)'),
+('Gris Oscuro', 'hsl(0, 0%, 41%)'),
+('Gris Claro', 'hsl(0, 0%, 83%)'),
+('Rojo', 'hsl(0, 100%, 50%)'),
+('Rojo Oscuro', 'hsl(0, 100%, 27%)'),
+('Rosa', 'hsl(350, 100%, 88%)'),
+('Rosa Claro', 'hsl(350, 100%, 86%)'),
+('Naranja', 'hsl(39, 100%, 50%)'),
+('Naranja Claro', 'hsl(51, 100%, 59%)'),
+('Amarillo', 'hsl(60, 100%, 50%)'),
+('Amarillo Pastel', 'hsl(60, 100%, 90%)'),
+('Verde', 'hsl(120, 100%, 50%)'),
+('Verde Oscuro', 'hsl(120, 100%, 20%)'),
+('Verde Oliva', 'hsl(82, 60%, 50%)'),
+('Verde Pastel', 'hsl(120, 73%, 74%)'),
+('Azul Marino', 'hsl(240, 100%, 25%)'),
+('Azul', 'hsl(240, 100%, 50%)'),
+('Azul Claro', 'hsl(210, 53%, 79%)'),
+('Turquesa', 'hsl(174, 72%, 56%)'),
+('Cyan', 'hsl(180, 100%, 50%)'),
+('Violeta', 'hsl(270, 100%, 25%)'),
+('Lila', 'hsl(300, 25%, 75%)'),
+('Magenta', 'hsl(300, 100%, 50%)'),
+('Marrón', 'hsl(0, 59%, 41%)'),
+('Marrón Claro', 'hsl(34, 43%, 68%)'),
+('Beige', 'hsl(60, 56%, 91%)'),
+('Dorado', 'hsl(51, 100%, 59%)'),
+('Plateado', 'hsl(0, 0%, 75%)');

@@ -1,5 +1,6 @@
 import { pool } from "../database/postgres.js";
 import fs from "fs";
+import sortedColors from "../helpers/sortedColors.js";
 
 const getAllProducts = async (req, res) => {
   try {
@@ -120,7 +121,7 @@ const getProductById = async (req, res) => {
     const queryAllData = `
     SELECT 
         c.color_name,
-        c.rgb_code,
+        c.hsl_code,
         c.color_id,
         sz.size_name,
         sz.size_id,
@@ -195,9 +196,10 @@ const getAllColors = async (req, res) => {
   try {
     const colors = await pool.query("SELECT * from colors;");
     const colorList = colors.rows;
+    const sortedList = sortedColors(colorList)
     res.status(200).json({
       statusOk: true,
-      colorList,
+      colorList: sortedList
     });
   } catch (error) {
     res.status(500).json({
