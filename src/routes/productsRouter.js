@@ -16,7 +16,8 @@ import {
   getWomenProducts,
   addNewColorToProduct,
   modifiedStockById,
-  getFilteredProducts
+  getFilteredProducts,
+  queryParamsProducts
 
 } from "../controllers/productsController.js";
 import upLoader from "../middlewares/uploadImage.js";
@@ -35,6 +36,7 @@ router.get("/products/men",getMenProducts);
 router.get("/products/filter",getFilteredProducts);
 router.get("/products/uni",getUniProducts);
 router.get("/product/:id", getProductById);
+router.get("/products/querys/",queryParamsProducts)
 
 // private routes
 router.post("/product", checkAuth, upLoader.single("imageurl"), createNewproduct);

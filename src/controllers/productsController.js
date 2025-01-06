@@ -196,10 +196,10 @@ const getAllColors = async (req, res) => {
   try {
     const colors = await pool.query("SELECT * from colors;");
     const colorList = colors.rows;
-    const sortedList = sortedColors(colorList)
+    const sortedList = sortedColors(colorList);
     res.status(200).json({
       statusOk: true,
-      colorList: sortedList
+      colorList: sortedList,
     });
   } catch (error) {
     res.status(500).json({
@@ -534,6 +534,64 @@ const getFilteredProducts = async (req, res) => {
   }
 };
 
+const queryParamsProducts = async (req, res) => {
+  try {
+    const { price_min, price_max, styles, colors, sizes } = req.query;
+
+    let query = `
+    SELECT DISTINCT p.product_id, p.name, p.price, p.description, p.discount, 
+           p.style, p.branch, p.gender, p.imageurl, p.quantity_sold, p.created_at
+    FROM products p
+    JOIN stock s ON p.product_id = s.product_id
+    JOIN colors c ON s.color_id = c.color_id
+    JOIN sizes si ON s.size_id = si.size_id
+    WHERE 1=1
+  `;
+
+    const params = [];
+
+    if (price_min) {
+      query += " AND price >= $1";
+      params.push(price_min);
+    }
+    if (price_max) {
+      query += " AND price <= $2";
+      params.push(price_max);
+    }
+    if (styles) {
+      const styleArray = styles.split(","); // e.g., ['casual', 'formal']
+      query += ` AND style = ANY($${params.length + 1})`;
+      params.push(styleArray);
+    }
+
+    if (colors) {
+      const colorArray = colors.split(","); // e.g., ['red', 'blue']
+      const placeholders = colorArray.map((_, i) => `$${params.length + i + 1}`).join(", "); // Generate placeholders
+      query += ` AND c.color_name IN (${placeholders})`; // Use placeholders in query
+      params.push(...colorArray); // Add each color to params array
+    }
+
+    if (sizes) {
+      const sizeArray = sizes.split(","); // e.g., ['M', 'L']
+      const placeholders = sizeArray.map((_,i) => `$${params.length + 1 + i}` ).join(", ");
+      query += ` AND si.size_name IN (${placeholders})`;
+      params.push(...sizeArray);
+    }
+
+    const response = await pool.query(query, params);
+
+    res.status(200).json({
+      statusOk: true,
+      data: response.rows,
+    });
+  } catch (error) {
+    res.status(500).json({
+      statusOk: false,
+      message: error.message,
+    });
+  }
+};
+
 export {
   getAllProducts,
   getNewProducts,
@@ -552,4 +610,5 @@ export {
   addNewColorToProduct,
   modifiedStockById,
   getFilteredProducts,
+  queryParamsProducts,
 };

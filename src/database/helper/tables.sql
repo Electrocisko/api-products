@@ -335,3 +335,19 @@ VALUES
 ('Beige', 'hsl(60, 56%, 91%)'),
 ('Dorado', 'hsl(51, 100%, 59%)'),
 ('Plateado', 'hsl(0, 0%, 75%)');
+
+
+-- Borrador consultas por querys --
+
+SELECT DISTINCT p.product_id, p.name, p.price, p.description, p.discount, p.style, p.branch, 
+       p.gender, p.imageurl, p.quantity_sold, p.created_at
+FROM products p
+JOIN stock s ON p.product_id = s.product_id
+JOIN colors c ON s.color_id = c.color_id
+JOIN sizes si ON s.size_id = si.size_id
+WHERE p.price BETWEEN 100 AND 500
+  AND p.style IN ('Casual', 'Formal') -- Lista de estilos, por ejemplo: ('casual', 'formal')
+  AND c.color_name IN ('Rojo', 'Blanco') -- Lista de colores, por ejemplo: ('red', 'blue')
+  AND si.size_name IN ('M', 'L') -- Lista de tallas, por ejemplo: ('M', 'L')
+  AND p.gender IN ('Unisex')
+  AND s.quantity > 0; -- Opcional: Excluir productos sin stock
