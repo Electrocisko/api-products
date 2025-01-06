@@ -536,7 +536,7 @@ const getFilteredProducts = async (req, res) => {
 
 const queryParamsProducts = async (req, res) => {
   try {
-    const { price_min, price_max, styles, colors, sizes } = req.query;
+    const { price_min, price_max, styles, colors, sizes, genders } = req.query;
 
     let query = `
     SELECT DISTINCT p.product_id, p.name, p.price, p.description, p.discount, 
@@ -576,6 +576,13 @@ const queryParamsProducts = async (req, res) => {
       const placeholders = sizeArray.map((_,i) => `$${params.length + 1 + i}` ).join(", ");
       query += ` AND si.size_name IN (${placeholders})`;
       params.push(...sizeArray);
+    }
+
+    if (genders) {
+      const genderArray = genders.split(","); // e.g., ['M', 'L']
+      const placeholders = genderArray.map((_,i) => `$${params.length + 1 + i}` ).join(", ");
+      query += ` AND p.gender IN (${placeholders})`;
+      params.push(...genderArray);
     }
 
     const response = await pool.query(query, params);
