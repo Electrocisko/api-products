@@ -565,11 +565,12 @@ const queryParamsProducts = async (req, res) => {
     }
 
     if (colors) {
-      const colorArray = colors.split(","); // e.g., ['red', 'blue']
-      const placeholders = colorArray.map((_, i) => `$${params.length + i + 1}`).join(", "); // Generate placeholders
-      query += ` AND c.color_name IN (${placeholders})`; // Use placeholders in query
-      params.push(...colorArray); // Add each color to params array
+      const colorArray = colors.split(",").map(Number); // Convertir a números
+      const placeholders = colorArray.map((_, i) => `$${params.length + i + 1}`).join(", ");
+      query += ` AND c.color_id IN (${placeholders})`;
+      params.push(...colorArray);
     }
+
 
     if (sizes) {
       const sizeArray = sizes.split(","); // e.g., ['M', 'L']
