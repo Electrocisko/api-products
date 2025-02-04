@@ -575,7 +575,7 @@ const queryParamsProducts = async (req, res) => {
     if (sizes) {
       const sizeArray = sizes.split(","); // e.g., ['M', 'L']
       const placeholders = sizeArray.map((_,i) => `$${params.length + 1 + i}` ).join(", ");
-      query += ` AND si.size_name IN (${placeholders})`;
+      query += ` AND si.size_id IN (${placeholders})`;
       params.push(...sizeArray);
     }
 
