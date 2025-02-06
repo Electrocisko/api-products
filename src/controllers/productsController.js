@@ -559,7 +559,7 @@ const queryParamsProducts = async (req, res) => {
       params.push(price_max);
     }
     if (styles) {
-      const styleArray = styles.split(","); // e.g., ['casual', 'formal']
+      const styleArray = styles.split(","); 
       query += ` AND style = ANY($${params.length + 1})`;
       params.push(styleArray);
     }
@@ -573,14 +573,14 @@ const queryParamsProducts = async (req, res) => {
 
 
     if (sizes) {
-      const sizeArray = sizes.split(","); // e.g., ['M', 'L']
+      const sizeArray = sizes.split(","); 
       const placeholders = sizeArray.map((_,i) => `$${params.length + 1 + i}` ).join(", ");
       query += ` AND si.size_id IN (${placeholders})`;
       params.push(...sizeArray);
     }
 
     if (genders) {
-      const genderArray = genders.split(","); // e.g., ['M', 'L']
+      const genderArray = genders.split(",");
       const placeholders = genderArray.map((_,i) => `$${params.length + 1 + i}` ).join(", ");
       query += ` AND p.gender IN (${placeholders})`;
       params.push(...genderArray);
@@ -588,8 +588,12 @@ const queryParamsProducts = async (req, res) => {
 
     const response = await pool.query(query, params);
 
+    let dataFound = true;
+    if (response.rowCount == 0) dataFound = false;
+
     res.status(200).json({
       statusOk: true,
+      dataFound,
       data: response.rows,
     });
   } catch (error) {
