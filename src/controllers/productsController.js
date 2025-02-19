@@ -536,7 +536,11 @@ const getFilteredProducts = async (req, res) => {
 
 const queryParamsProducts = async (req, res) => {
   try {
-    const { price_min, price_max, styles, colors, sizes, genders } = req.query;
+    let { price_min, price_max, styles, colors, sizes, genders, page, limit } =
+      req.query;
+
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
 
     let query = `
     SELECT DISTINCT p.product_id, p.name, p.price, p.description, p.discount, 
@@ -559,34 +563,50 @@ const queryParamsProducts = async (req, res) => {
       params.push(price_max);
     }
     if (styles) {
-      const styleArray = styles.split(","); 
+      const styleArray = styles.split(",");
       query += ` AND style = ANY($${params.length + 1})`;
       params.push(styleArray);
     }
 
     if (colors) {
       const colorArray = colors.split(",").map(Number); // Convertir a números
-      const placeholders = colorArray.map((_, i) => `$${params.length + i + 1}`).join(", ");
+      const placeholders = colorArray
+        .map((_, i) => `$${params.length + i + 1}`)
+        .join(", ");
       query += ` AND c.color_id IN (${placeholders})`;
       params.push(...colorArray);
     }
 
-
     if (sizes) {
-      const sizeArray = sizes.split(","); 
-      const placeholders = sizeArray.map((_,i) => `$${params.length + 1 + i}` ).join(", ");
+      const sizeArray = sizes.split(",");
+      const placeholders = sizeArray
+        .map((_, i) => `$${params.length + 1 + i}`)
+        .join(", ");
       query += ` AND si.size_id IN (${placeholders})`;
       params.push(...sizeArray);
     }
 
     if (genders) {
       const genderArray = genders.split(",");
-      const placeholders = genderArray.map((_,i) => `$${params.length + 1 + i}` ).join(", ");
+      const placeholders = genderArray
+        .map((_, i) => `$${params.length + 1 + i}`)
+        .join(", ");
       query += ` AND p.gender IN (${placeholders})`;
       params.push(...genderArray);
     }
 
+    const offset = (page - 1) * limit;
+    query += `LIMIT ${limit} OFFSET ${offset};`;
+
     const response = await pool.query(query, params);
+
+    // Consulta para obtener el total de productos
+    const { rows: totalCount } = await pool.query(
+      "SELECT COUNT(*) FROM products"
+    );
+    const totalProducts = parseInt(totalCount[0].count);
+
+    const totalPages = Math.ceil(totalProducts / limit);
 
     let dataFound = true;
     if (response.rowCount == 0) dataFound = false;
@@ -595,6 +615,9 @@ const queryParamsProducts = async (req, res) => {
       statusOk: true,
       dataFound,
       data: response.rows,
+      totalProducts,
+      totalPages,
+      page
     });
   } catch (error) {
     res.status(500).json({
