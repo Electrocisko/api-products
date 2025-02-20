@@ -604,6 +604,9 @@ const queryParamsProducts = async (req, res) => {
     const { rows: totalCount } = await pool.query(
       "SELECT COUNT(*) FROM products"
     );
+
+   
+    const totalProductShowing = response.rowCount;
     const totalProducts = parseInt(totalCount[0].count);
 
     const totalPages = Math.ceil(totalProducts / limit);
@@ -617,7 +620,9 @@ const queryParamsProducts = async (req, res) => {
       data: response.rows,
       totalProducts,
       totalPages,
-      page
+      page,
+      totalProductShowing
+
     });
   } catch (error) {
     res.status(500).json({
