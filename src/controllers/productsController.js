@@ -19,7 +19,7 @@ const getAllProducts = async (req, res) => {
 
 const getNewProducts = async (req, res) => {
   try {
-    const queryString = `SELECT * FROM products ORDER BY created_at DESC LIMIT 4;`;
+    const queryString = `SELECT * FROM products ORDER BY created_at DESC LIMIT 20;`;
     const data = await pool.query(queryString);
     res.status(200).json({
       statusOk: true,
@@ -562,7 +562,7 @@ const queryParamsProducts = async (req, res) => {
       query += " AND price <= $2";
       params.push(price_max);
     }
-    if (styles) {
+    if (styles && styles != "All") {
       const styleArray = styles.split(",");
       query += ` AND style = ANY($${params.length + 1})`;
       params.push(styleArray);
@@ -595,19 +595,15 @@ const queryParamsProducts = async (req, res) => {
       params.push(...genderArray);
     }
 
+    // Consulta para obtener el total de productos
+    const { rows: totalCount } = await pool.query(query, params);
     const offset = (page - 1) * limit;
     query += `LIMIT ${limit} OFFSET ${offset};`;
 
     const response = await pool.query(query, params);
 
-    // Consulta para obtener el total de productos
-    const { rows: totalCount } = await pool.query(
-      "SELECT COUNT(*) FROM products"
-    );
-
-   
     const totalProductShowing = response.rowCount;
-    const totalProducts = parseInt(totalCount[0].count);
+    const totalProducts = parseInt(totalCount.length);
 
     const totalPages = Math.ceil(totalProducts / limit);
 
@@ -621,8 +617,7 @@ const queryParamsProducts = async (req, res) => {
       totalProducts,
       totalPages,
       page,
-      totalProductShowing
-
+      totalProductShowing,
     });
   } catch (error) {
     res.status(500).json({
