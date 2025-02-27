@@ -562,10 +562,15 @@ const queryParamsProducts = async (req, res) => {
       query += " AND price <= $2";
       params.push(price_max);
     }
-    if (styles && styles != "All") {
-      const styleArray = styles.split(",");
-      query += ` AND style = ANY($${params.length + 1})`;
-      params.push(styleArray);
+    if (styles) {
+      if(styles =="All") {
+        console.log("All");
+      } else {
+        const styleArray = styles.split(",");
+        query += ` AND style = ANY($${params.length + 1})`;
+        params.push(styleArray);
+      }
+   
     }
 
     if (colors) {
@@ -598,14 +603,17 @@ const queryParamsProducts = async (req, res) => {
     // Consulta para obtener el total de productos
     const { rows: totalCount } = await pool.query(query, params);
     const offset = (page - 1) * limit;
-    query += `LIMIT ${limit} OFFSET ${offset};`;
+    query += ` LIMIT ${limit} OFFSET ${offset};`;
+
+    console.log(query);
+    console.log(params);
 
     const response = await pool.query(query, params);
 
     const totalProductShowing = response.rowCount;
     const totalProducts = parseInt(totalCount.length);
-
     const totalPages = Math.ceil(totalProducts / limit);
+    const productsRange = [offset, ((offset + limit) > totalProducts) ? totalProducts: offset + limit ];
 
     let dataFound = true;
     if (response.rowCount == 0) dataFound = false;
@@ -618,6 +626,9 @@ const queryParamsProducts = async (req, res) => {
       totalPages,
       page,
       totalProductShowing,
+      offset,
+      limit,
+      productsRange
     });
   } catch (error) {
     res.status(500).json({
