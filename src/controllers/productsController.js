@@ -562,6 +562,7 @@ const queryParamsProducts = async (req, res) => {
       query += " AND price <= $2";
       params.push(price_max);
     }
+
     if (styles) {
       if(styles =="All") {
         console.log("All");
@@ -570,7 +571,6 @@ const queryParamsProducts = async (req, res) => {
         query += ` AND style = ANY($${params.length + 1})`;
         params.push(styleArray);
       }
-   
     }
 
     if (colors) {
@@ -604,9 +604,6 @@ const queryParamsProducts = async (req, res) => {
     const { rows: totalCount } = await pool.query(query, params);
     const offset = (page - 1) * limit;
     query += ` LIMIT ${limit} OFFSET ${offset};`;
-
-    console.log(query);
-    console.log(params);
 
     const response = await pool.query(query, params);
 
