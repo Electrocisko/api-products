@@ -23,6 +23,8 @@ import {
 import upLoader from "../middlewares/uploadImage.js";
 import checkAuth from "../middlewares/checkAuth.js";
 
+import {upload, uploadToCloudinary} from "../middlewares/upLoadCloudinary.js"
+
 const router = express.Router();
 
 router.get("/products", getAllProducts);
@@ -39,7 +41,8 @@ router.get("/product/:id", getProductById);
 router.get("/products/querys/",queryParamsProducts)
 
 // private routes
-router.post("/product", checkAuth, upLoader.single("imageurl"), createNewproduct);
+//router.post("/product", checkAuth, upLoader.single("imageurl"), createNewproduct);
+router.post("/product", upload.single("imageurl"), uploadToCloudinary, createNewproduct);
 router.post("/fullproduct", checkAuth, upLoader.single("imageurl"), addNewFullProduct);
 router.post("/stock", checkAuth, upLoader.single("imageurl"), addStock);
 router.post("/addcolor",checkAuth,  upLoader.single("imageurl"), addNewColorToProduct);
