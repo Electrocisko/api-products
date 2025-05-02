@@ -3,24 +3,36 @@ import cloudinary from "../helpers/cloudinaryConfig.js";
 import fs from "fs";
 
 // Usamos multer con almacenamiento temporal
-const upload = multer({ dest: "uploads/" });
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, "uploads/"),
+    filename: (req, file, cb) => cb(null, file.originalname),
+  });
+  const upload = multer({ storage });
+  
+
+
+
 
 const uploadToCloudinary = async (req, res, next) => {
-    //if (!req.file) return res.status(400).json({ error: "No se envió ninguna imagen" });
-  
-  
     try {
         if (!req.file) {
            next()
         } else {
-            const result = await cloudinary.uploader.upload(req.file.path, {
-                folder: "mis_imagenes", // nombre de carpeta en tu Cloudinary
-              });
+            const options = {
+                use_filename: true,
+                unique_filename: false,
+                overwrite: true,
+                folder: "ecommerce_products",
+              };
+
+            const result = await cloudinary.uploader.upload(req.file.path,options);
+
+            console.log(result);
           
               // Borramos el archivo temporal después de subir
               fs.unlinkSync(req.file.path);
           
-              req.imageUrl = result.secure_url; // guardamos la URL para el siguiente middleware o controlador
+              req.imageurl = result.secure_url; // guardamos la URL para el siguiente middleware o controlador
               next()
         }
       

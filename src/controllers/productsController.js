@@ -161,8 +161,6 @@ const createNewproduct = async (req, res) => {
     const { name, price, description, discount, style, branch, gender } =
       req.body;
 
-      console.log(req.body);
-
     let image;
     !req.file ? (image = "generico.png") : (image = req.file.filename);
 
