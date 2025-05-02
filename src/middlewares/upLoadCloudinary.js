@@ -4,42 +4,35 @@ import fs from "fs";
 
 // Usamos multer con almacenamiento temporal
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, "uploads/"),
-    filename: (req, file, cb) => cb(null, file.originalname),
-  });
-  const upload = multer({ storage });
-  
-
-
-
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => cb(null, file.originalname),
+});
+const upload = multer({ storage });
 
 const uploadToCloudinary = async (req, res, next) => {
-    try {
-        if (!req.file) {
-           next()
-        } else {
-            const options = {
-                use_filename: true,
-                unique_filename: false,
-                overwrite: true,
-                folder: "ecommerce_products",
-              };
+  try {
+    if (!req.file) {
+        req.imageurl = 'https://res.cloudinary.com/dweiq6ibc/image/upload/v1746198165/generico_t1bnip.png'
+      next();
+    } else {
+      const options = {
+        use_filename: true,
+        unique_filename: false,
+        overwrite: true,
+        folder: "ecommerce_products",
+      };
 
-            const result = await cloudinary.uploader.upload(req.file.path,options);
+      const result = await cloudinary.uploader.upload(req.file.path, options);
+      // Borramos el archivo temporal después de subir
+      fs.unlinkSync(req.file.path);
 
-            console.log(result);
-          
-              // Borramos el archivo temporal después de subir
-              fs.unlinkSync(req.file.path);
-          
-              req.imageurl = result.secure_url; // guardamos la URL para el siguiente middleware o controlador
-              next()
-        }
-      
-    } catch (err) {
-      console.error("Error al subir a Cloudinary:", err);
-      res.status(500).json({ error: "Falló la subida a Cloudinary" });
+      req.imageurl = result.secure_url; // guardamos la URL para el siguiente middleware o controlador
+      next();
     }
-  };
-  
-  export { upload, uploadToCloudinary };
+  } catch (err) {
+    console.error("Error al subir a Cloudinary:", err);
+    res.status(500).json({ error: "Falló la subida a Cloudinary" });
+  }
+};
+
+export { upload, uploadToCloudinary };

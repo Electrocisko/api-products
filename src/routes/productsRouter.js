@@ -41,11 +41,10 @@ router.get("/product/:id", getProductById);
 router.get("/products/querys/",queryParamsProducts)
 
 // private routes
-//router.post("/product", checkAuth, upLoader.single("imageurl"), createNewproduct);
-router.post("/product", upload.single("imageurl"), uploadToCloudinary, createNewproduct);
-router.post("/fullproduct", checkAuth, upLoader.single("imageurl"), addNewFullProduct);
-router.post("/stock", checkAuth, upLoader.single("imageurl"), addStock);
-router.post("/addcolor",checkAuth,  upLoader.single("imageurl"), addNewColorToProduct);
+router.post("/product",checkAuth, upload.single("imageurl"), uploadToCloudinary, createNewproduct);
+router.post("/fullproduct", checkAuth,  upload.single("imageurl"), uploadToCloudinary, addNewFullProduct);
+router.post("/stock", checkAuth,  upload.single("imageurl"), uploadToCloudinary, addStock);
+router.post("/addcolor",checkAuth,   upload.single("imageurl"), uploadToCloudinary, addNewColorToProduct);
 router.put("/products/updatestock",checkAuth, modifiedStockById);
 router.delete("/product/:id",checkAuth, deleteProductById);
 

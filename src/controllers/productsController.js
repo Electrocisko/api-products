@@ -162,7 +162,7 @@ const createNewproduct = async (req, res) => {
       req.body;
 
     let image;
-    !req.file ? (image = "generico.png") : (image = req.file.filename);
+    !req.imageurl ? (image = "generico.png") : (image = req.imageurl);
 
     const query = `  INSERT INTO products (name,price, description, discount, style, branch,gender,imageurl)
   VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING product_id;`;
@@ -289,7 +289,7 @@ const addNewFullProduct = async (req, res) => {
 
     //  multer
     let image;
-    !req.file ? (image = "generico.png") : (image = req.file.filename);
+    !req.imageurl ? (image = "generico.png") : (image = req.imageurl);
 
     const query1 =
       "INSERT INTO products (name, price, description, discount, style, branch, gender, imageurl) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)RETURNING product_id;";
