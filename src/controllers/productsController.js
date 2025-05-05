@@ -415,7 +415,7 @@ const addNewColorToProduct = async (req, res) => {
 
     //multer
     let image;
-    !req.file ? (image = "generico.png") : (image = req.file.filename);
+    !req.imageurl ? (image = "generico.png") : (image = req.imageurl);
 
     // Obtengo los ids de la tabla sizes
     const sizes = await pool.query(
@@ -424,8 +424,6 @@ const addNewColorToProduct = async (req, res) => {
     const listSizeIds = sizes.rows.map((item) => {
       return item.size_id;
     });
-
-    //const new_product_id = parseInt(response.rows[0].product_id); // lo parseo a integer
 
     const query2 =
       "INSERT INTO stock (product_id, color_id, size_id, quantity, imageurl) VALUES " +
