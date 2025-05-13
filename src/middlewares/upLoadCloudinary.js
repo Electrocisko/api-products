@@ -12,7 +12,8 @@ const upload = multer({ storage });
 const uploadToCloudinary = async (req, res, next) => {
   try {
     if (!req.file) {
-        req.imageurl = 'https://res.cloudinary.com/dweiq6ibc/image/upload/v1746198165/generico_t1bnip.png'
+      req.imageurl =
+        "https://res.cloudinary.com/dweiq6ibc/image/upload/v1746198165/generico_t1bnip.png";
       next();
     } else {
       const options = {
@@ -20,6 +21,11 @@ const uploadToCloudinary = async (req, res, next) => {
         unique_filename: false,
         overwrite: true,
         folder: "ecommerce_products",
+        transformation: [
+          { width: 500, crop: "scale" },
+          { fetch_format: "auto" },
+          {quality: "auto"}
+        ],
       };
 
       const result = await cloudinary.uploader.upload(req.file.path, options);
