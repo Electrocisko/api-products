@@ -1,6 +1,7 @@
 import { pool } from "../database/postgres.js";
 import fs from "fs";
 import sortedColors from "../helpers/sortedColors.js";
+import cloudinary from "../helpers/cloudinaryConfig.js";
 
 const getAllProducts = async (req, res) => {
   try {
@@ -370,15 +371,23 @@ const deleteProductById = async (req, res) => {
     if (productDeleteResponse.rowCount == 0) {
       throw new Error("The product ID does not exist");
     }
+    let cloudinaryResponse;
     if (productDeleteResponse.rows[0].imageurl != "generico.png") {
-      fs.unlinkSync(
-        `src/public/images/${productDeleteResponse.rows[0].imageurl}`
-      );
+      // Quitar el dominio y versión para quedarte con el public_id
+      const url = productDeleteResponse.rows[0].imageurl;
+      let path = url.split("/upload/")[1];
+      path = path.replace(/^v\d+\//, "");
+      const publicId = path.replace(/\.[^/.]+$/, "");
+      const cloudinaryToDestroy = await cloudinary.uploader.destroy(publicId, {
+        invalidate: true,
+      });
+      cloudinaryResponse = cloudinaryToDestroy;
     }
 
     res.status(200).json({
       statusOk: true,
-      message: "Here delete product",
+      message: "Product Delete successfully",
+      cloudinary: cloudinaryResponse,
       id,
     });
   } catch (error) {
@@ -562,7 +571,7 @@ const queryParamsProducts = async (req, res) => {
     }
 
     if (styles) {
-      if(styles =="All") {
+      if (styles == "All") {
         console.log("All");
       } else {
         const styleArray = styles.split(",");
@@ -608,7 +617,10 @@ const queryParamsProducts = async (req, res) => {
     const totalProductShowing = response.rowCount;
     const totalProducts = parseInt(totalCount.length);
     const totalPages = Math.ceil(totalProducts / limit);
-    const productsRange = [offset, ((offset + limit) > totalProducts) ? totalProducts: offset + limit ];
+    const productsRange = [
+      offset,
+      offset + limit > totalProducts ? totalProducts : offset + limit,
+    ];
 
     let dataFound = true;
     if (response.rowCount == 0) dataFound = false;
@@ -623,7 +635,7 @@ const queryParamsProducts = async (req, res) => {
       totalProductShowing,
       offset,
       limit,
-      productsRange
+      productsRange,
     });
   } catch (error) {
     res.status(500).json({
