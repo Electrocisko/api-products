@@ -5,6 +5,15 @@ export const pool = new pg.Pool({
     host: process.env.PGHOST,
     password: process.env.PGPASSWORD,
     database: process.env.PGDATABASE,
-    port: process.env.PGPORT,
-    url: process.env.DATABASE_URL
+    port: Number(process.env.PGPORT),
+    ssl: {
+        rejectUnauthorized: false
+    }
 })
+
+// export const pool = new pg.Pool({
+//   connectionString: process.env.DATABASE_PUBLIC_URL,
+//   ssl: {
+//     rejectUnauthorized: false
+//   }
+// });
