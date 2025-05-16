@@ -4,7 +4,7 @@ import fs from "fs";
 
 // Usamos multer con almacenamiento temporal
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
+  destination: (req, file, cb) => cb(null, "images/"),
   filename: (req, file, cb) => cb(null, file.originalname),
 });
 const upload = multer({ storage });
