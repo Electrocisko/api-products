@@ -234,7 +234,7 @@ const addStock = async (req, res) => {
 
     //  multer
     let image;
-    !req.file ? (image = "generico.png") : (image = req.file.filename);
+    !req.file ? (image = "https://res.cloudinary.com/dweiq6ibc/image/upload/v1747493399/no_image_byoxus.png") : (image = req.file.filename);
 
     if (!product_id || !color_id || !size_id || !quantity)
       throw new Error("Incomplete data in the form.");
@@ -290,7 +290,7 @@ const addNewFullProduct = async (req, res) => {
 
     //  multer
     let image;
-    !req.imageurl ? (image = "generico.png") : (image = req.imageurl);
+    !req.imageurl ? (image = "https://res.cloudinary.com/dweiq6ibc/image/upload/v1747493399/no_image_byoxus.png") : (image = req.imageurl);
 
     const query1 =
       "INSERT INTO products (name, price, description, discount, style, branch, gender, imageurl) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)RETURNING product_id;";
@@ -372,7 +372,7 @@ const deleteProductById = async (req, res) => {
       throw new Error("The product ID does not exist");
     }
     let cloudinaryResponse;
-    if (productDeleteResponse.rows[0].imageurl != "generico.png") {
+    if (productDeleteResponse.rows[0].imageurl != "https://res.cloudinary.com/dweiq6ibc/image/upload/v1747493399/no_image_byoxus.png") {
       // Quitar el dominio y versión para quedarte con el public_id
       const url = productDeleteResponse.rows[0].imageurl;
       let path = url.split("/upload/")[1];
