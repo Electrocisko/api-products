@@ -7,7 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Usamos multer con almacenamiento temporal
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, __dirname+"/images/"),
+  destination: (req, file, cb) => cb(null, "/app/src/public/images/"),  
   filename: (req, file, cb) => cb(null, file.originalname),
 });
 const upload = multer({ storage });
