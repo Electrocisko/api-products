@@ -1,10 +1,13 @@
 import multer from "multer";
 import cloudinary from "../helpers/cloudinaryConfig.js";
 import fs from "fs";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Usamos multer con almacenamiento temporal
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "/images/"),
+  destination: (req, file, cb) => cb(null, __dirname+"/images/"),
   filename: (req, file, cb) => cb(null, file.originalname),
 });
 const upload = multer({ storage });
