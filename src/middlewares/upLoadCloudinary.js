@@ -13,7 +13,7 @@ const uploadToCloudinary = async (req, res, next) => {
   try {
     if (!req.file) {
       req.imageurl =
-        "https://res.cloudinary.com/dweiq6ibc/image/upload/v1746198165/generico_t1bnip.png";
+        "https://res.cloudinary.com/dweiq6ibc/image/upload/v1747483072/no_image_hfce13.png";
       next();
     } else {
       const options = {
